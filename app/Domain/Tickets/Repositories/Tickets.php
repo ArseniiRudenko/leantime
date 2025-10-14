@@ -1754,6 +1754,7 @@ class Tickets
             'production' => 'production',
             'planHours' => 'planHours',
             'status' => 'status',
+            'effort' => 'storypoints'
         ];
 
         $changedFields = [];

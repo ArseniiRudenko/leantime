@@ -1775,7 +1775,7 @@ class Tickets
                 isset($oldValues[$dbTable]) === true &&
 
                 ($oldValues[$dbTable] != $values[$dbTable]) &&
-                ($values[$dbTable] != '')
+                ($values[$dbTable] != '' || $enum == 'editors')
             ) {
                 $changedFields[$enum] = $values[$dbTable];
             }

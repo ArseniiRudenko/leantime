@@ -10,6 +10,8 @@
       <sourceFolder url="file://$MODULE_DIR$/app/Plugins/Billing/spec" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/spec" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/app/Plugins/McpServer/vendor/php-mcp/server/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/app/Plugins/AuditTrail/" isTestSource="false" packagePrefix="Leantime\Plugins\AuditTrail\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/Plugins/GiteaListener/" isTestSource="false" packagePrefix="Leantime\Plugins\GiteaListener\" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/league/html-to-markdown" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/bacon/bacon-qr-code" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/htmlawed/htmlawed" />
@@ -120,6 +122,14 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/phpseclib/phpseclib" />
       <excludeFolder url="file://$MODULE_DIR$/vendor" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/_laravel_idea" />
+      <excludeFolder url="file://$MODULE_DIR$/public/dist/css" />
+      <excludeFolder url="file://$MODULE_DIR$/public/dist/fonts" />
+      <excludeFolder url="file://$MODULE_DIR$/public/dist/images" />
+      <excludeFolder url="file://$MODULE_DIR$/public/dist/js" />
+      <excludeFolder url="file://$MODULE_DIR$/public/dist/lottie" />
+      <excludeFolder url="file://$MODULE_DIR$/storage/framework/cache/9488295cf8ae109416a5057063fcd76a" />
+      <excludeFolder url="file://$MODULE_DIR$/storage/framework/cache/avatars" />
+      <excludeFolder url="file://$MODULE_DIR$/storage/framework/cache/installation" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

@@ -1,3 +1,6 @@
-[submodule "app/Plugins"]
-	path = app/Plugins
-	url = git@github.com:Leantime/plugins.git
+[submodule "app/Plugins/AuditTrail"]
+	path = app/Plugins/AuditTrail
+	url = git@github.com:ArseniiRudenko/AuditTrail.git
+[submodule "app/Plugins/GiteaListener"]
+	path = app/Plugins/GiteaListener
+	url = git@github.com:ArseniiRudenko/GiteaListener.git

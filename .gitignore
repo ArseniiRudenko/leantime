@@ -3,7 +3,6 @@
 
 .settings
 .DS_Store
-.vscode
 *.swp
 
 config/_configuration.php
@@ -101,9 +100,6 @@ fabric.properties
 # Lock files
 .github/workflows/phpmd.yml
 
-# Ignore logging files
-logs/*
-
 # Ignore all customization files
 app/custom/domain/
 app/custom/plugin/
@@ -132,3 +128,4 @@ config/.env
 /.serena
 /.playwright-mcp
 /.idea
+/composer.phar

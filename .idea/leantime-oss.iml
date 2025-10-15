@@ -130,6 +130,7 @@
       <excludeFolder url="file://$MODULE_DIR$/storage/framework/cache/9488295cf8ae109416a5057063fcd76a" />
       <excludeFolder url="file://$MODULE_DIR$/storage/framework/cache/avatars" />
       <excludeFolder url="file://$MODULE_DIR$/storage/framework/cache/installation" />
+      <excludeFolder url="file://$MODULE_DIR$/app/Plugins/GiteaListener/vendor/composer" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

@@ -33,10 +33,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-      - name: Install JS deps & build (webpack)
-        run: |
-            npm ci
-            npx webpack build
+
       - name: Composer update (consider install in CI)
         env:
             COMPOSER_ALLOW_SUPERUSER: 1

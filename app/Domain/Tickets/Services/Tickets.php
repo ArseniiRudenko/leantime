@@ -1114,10 +1114,10 @@ class Tickets
         return $branch;
     }
 
-    private function flattenTree($items, &$r)
+    private function flattenTree($items, &$r): void
     {
         foreach ($items as $item) {
-            $c = isset($item->children) ? $item->children : null;
+            $c = $item->children ?? null;
             unset($item->children);
             $r[] = $item;
             if ($c) {
@@ -1128,8 +1128,6 @@ class Tickets
 
     private function sortItemsHierarchically($items): array
     {
-        $tree = [];
-        $lookup = [];
 
         $tree = $this->buildTicketTree($items);
 
@@ -3004,13 +3002,13 @@ class Tickets
      *
      * @api
      */
-    public function findMilestone(string $term, int $projectId)
+    public function findMilestone(string $term, int $projectId): array
     {
 
         $milestones = $this->getAllMilestones(['currentProject' => $projectId]);
 
         foreach ($milestones as $key => $milestone) {
-            if (Str::contains($milestones[$key]['headline'], $term, ignoreCase: true)) {
+            if (Str::contains($milestone['headline'], $term, ignoreCase: true)) {
                 $milestones[$key] = $this->prepareDatesForApiResponse($milestone);
             } else {
                 unset($milestones[$key]);
@@ -3030,7 +3028,7 @@ class Tickets
      *
      * @api
      */
-    public function findTicket(string $term, int $projectId, ?int $userId)
+    public function findTicket(string $term, int $projectId, ?int $userId): array
     {
 
         $milestones = $this->getAll([

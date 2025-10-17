@@ -77,12 +77,12 @@ ARG PGID=1000
 WORKDIR /var/www/html
 
 # Install Leantime
-ARG LEAN_VERSION
-RUN set -ex; \
-    curl -fsSL --retry 3 https://github.com/Leantime/leantime/releases/download/v${LEAN_VERSION}/Leantime-v${LEAN_VERSION}.tar.gz -o leantime.tar.gz && \
-    tar xzf leantime.tar.gz --strip-components 1 && \
-    rm leantime.tar.gz && \
-    chown -R www-data:www-data .
+COPY --chown=www-data:www-data ../app /var/www/html/app
+COPY --chown=www-data:www-data ../vendor /var/www/html/vendor
+COPY --chown=www-data:www-data ../public /var/www/html/public
+COPY --chown=www-data:www-data ../bootstrap /var/www/html/bootstrap
+COPY --chown=www-data:www-data ../storage /var/www/html/storage
+COPY --chown=www-data:www-data ../bin /var/www/html/bin
 
 # Set Permissions
 RUN set -ex; \

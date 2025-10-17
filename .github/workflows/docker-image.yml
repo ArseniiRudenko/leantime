@@ -21,6 +21,31 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, intl, pdo_mysql, bcmath, gd, curl, xml, zip
+          tools: composer
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Install JS deps & build (webpack)
+        run: |
+            npm ci
+            npx webpack build
+      - name: Composer update (consider install in CI)
+        env:
+            COMPOSER_ALLOW_SUPERUSER: 1
+        run: |
+            composer update --no-interaction --no-progress --prefer-dist
+      - name: Make build
+        run: |
+            make build
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 

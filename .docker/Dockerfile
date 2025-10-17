@@ -77,12 +77,13 @@ ARG PGID=1000
 WORKDIR /var/www/html
 
 # Install Leantime
-COPY --chown=www-data:www-data ../app /var/www/html/app
-COPY --chown=www-data:www-data ../vendor /var/www/html/vendor
-COPY --chown=www-data:www-data ../public /var/www/html/public
-COPY --chown=www-data:www-data ../bootstrap /var/www/html/bootstrap
-COPY --chown=www-data:www-data ../storage /var/www/html/storage
-COPY --chown=www-data:www-data ../bin /var/www/html/bin
+COPY --chown=www-data:www-data ../app app
+COPY --chown=www-data:www-data ../vendor vendor
+COPY --chown=www-data:www-data ../public public
+COPY --chown=www-data:www-data ../bootstrap bootstrap
+COPY --chown=www-data:www-data ../storage storage
+COPY --chown=www-data:www-data ../bin bin
+COPY --chown=www-data:www-data ../config config
 
 # Set Permissions
 RUN set -ex; \

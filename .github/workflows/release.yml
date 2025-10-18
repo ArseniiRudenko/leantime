@@ -1,0 +1,55 @@
+name: Build Release
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: release-publish-${{ github.ref }}
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, intl, pdo_mysql, bcmath, gd, curl, xml, zip
+          tools: composer
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Composer update
+        env:
+          COMPOSER_ALLOW_SUPERUSER: 1
+        run: |
+          composer update --no-interaction --no-progress --prefer-dist
+
+      - name: version
+        run: echo "version=$(make get-version)" >> $GITHUB_OUTPUT
+        id: version
+
+      - name: Make build
+        run: |
+          clean build
+
+      - name: upload zip
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: https://api.github.com/repos/ArseniiRudenko/leantime/releases/tags/v${{ steps.version.outputs.version }}
+          asset_path: ./target/Leantime-v${{ steps.version.outputs.version }}.zip
+          asset_name: Leantime-v${{ steps.version.outputs.version }}.zip
+          asset_content_type: application/zip

@@ -46,6 +46,17 @@ jobs:
         run: |
           make package
 
+      - name: release
+        uses: ncipollo/release-action@v1
+        id: create_release
+        with:
+          draft: false
+          prerelease: false
+          name: Leantime v${{ steps.version.outputs.version }}
+          tag: v${{ steps.version.outputs.version }}
+          generateReleaseNotes: true
+          makeLatest: true
+
       - name: upload zip
         uses: actions/upload-release-asset@v1
         with:

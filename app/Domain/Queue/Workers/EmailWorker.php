@@ -113,7 +113,7 @@ class EmailWorker
             $this->queue->deleteMessageInQueue($allMessagesToDelete[$currentUserId]);
 
             // Store the last time a mail was sent to $recipient email
-            $thedate = date('Y-m-d H:i:s');
+            $thedate = gmdate('Y-m-d H:i:s');
             $this->settingsRepo->saveSetting('usersettings.'.$theuser['id'].'.lastMessageDate', $thedate);
         }
     }

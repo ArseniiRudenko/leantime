@@ -253,7 +253,7 @@ class Plugins
             ->set('enabled', 0)
             ->set('description', $pluginFile['description'])
             ->set('version', $pluginFile['version'])
-            ->set('installdate', date('y-m-d'))
+            ->set('installdate', gmdate('y-m-d'))
             ->set('foldername', $pluginFolder)
             ->set('license', $license_key)
             ->set('format', $format)
@@ -729,7 +729,7 @@ class Plugins
             'module' => 'plugins',
             'moduleId' => $pluginId,
             'message' => sprintf("The plugin '%s' has been disabled due to license validation failure. Please check your marketplace subscription.", $plugin->name),
-            'datetime' => date('Y-m-d H:i:s'),
+            'datetime' => gmdate('Y-m-d H:i:s'),
             'url' => '/plugins/show',
             'authorId' => 1,
         ])->toArray();

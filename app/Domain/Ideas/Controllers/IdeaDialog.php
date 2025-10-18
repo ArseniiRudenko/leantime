@@ -102,7 +102,7 @@ class IdeaDialog extends Controller
             if ($params['text'] != '') {
                 $values = [
                     'text' => $params['text'],
-                    'date' => date('Y-m-d H:i:s'),
+                    'date' => gmdate('Y-m-d H:i:s'),
                     'userId' => (session('userdata.id')),
                     'moduleId' => (int) $_GET['id'],
                     'commentParent' => ($params['father']),

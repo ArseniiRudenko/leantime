@@ -1126,4 +1126,14 @@ class Projects
         return $value;
 
     }
+
+    public function getProjectNames(): array
+    {
+        $sql = 'SELECT id, name FROM `zp_projects` ORDER BY id ASC';
+        $stmn = $this->db->database->prepare($sql);
+        $stmn->execute();
+        $values = $stmn->fetchAll(PDO::FETCH_ASSOC);
+        $stmn->closeCursor();
+        return $values;
+    }
 }

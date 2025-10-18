@@ -340,7 +340,7 @@ class Users
         $stmn->bindValue(':jobTitle', $values['jobTitle'] ?? '', PDO::PARAM_STR);
         $stmn->bindValue(':jobLevel', $values['jobLevel'] ?? '', PDO::PARAM_STR);
         $stmn->bindValue(':department', $values['department'] ?? '', PDO::PARAM_STR);
-        $stmn->bindValue(':modified', date('Y-m-d H:i:s'), PDO::PARAM_STR);
+        $stmn->bindValue(':modified', gmdate('Y-m-d H:i:s'), PDO::PARAM_STR);
 
         $stmn->bindValue(':id', $id, PDO::PARAM_STR);
 
@@ -411,7 +411,7 @@ class Users
         $stmn->bindValue(':username', $values['user'], PDO::PARAM_STR);
         $stmn->bindValue(':phone', $values['phone'], PDO::PARAM_STR);
         $stmn->bindValue(':notifications', $values['notifications'], PDO::PARAM_STR);
-        $stmn->bindValue(':modified', date('Y-m-d H:i:s'), PDO::PARAM_STR);
+        $stmn->bindValue(':modified', gmdate('Y-m-d H:i:s'), PDO::PARAM_STR);
 
         $stmn->bindValue(':id', $id, PDO::PARAM_STR);
 
@@ -479,8 +479,8 @@ class Users
         $stmn->bindValue(':jobTitle', $values['jobTitle'] ?? '', PDO::PARAM_STR);
         $stmn->bindValue(':jobLevel', $values['jobLevel'] ?? '', PDO::PARAM_STR);
         $stmn->bindValue(':department', $values['department'] ?? '', PDO::PARAM_STR);
-        $stmn->bindValue(':createdOn', date('Y-m-d H:i:s'), PDO::PARAM_STR);
-        $stmn->bindValue(':modified', date('Y-m-d H:i:s'), PDO::PARAM_STR);
+        $stmn->bindValue(':createdOn', gmdate('Y-m-d H:i:s'), PDO::PARAM_STR);
+        $stmn->bindValue(':modified', gmdate('Y-m-d H:i:s'), PDO::PARAM_STR);
 
         if (isset($values['source'])) {
             $stmn->bindValue(':source', $values['source'], PDO::PARAM_STR);
@@ -575,7 +575,7 @@ class Users
 
         $stmn = $this->db->database->prepare($sql);
         $stmn->bindValue(':id', $id, PDO::PARAM_STR);
-        $stmn->bindValue(':modified', date('Y-m-d H:i:s'), PDO::PARAM_STR);
+        $stmn->bindValue(':modified', gmdate('Y-m-d H:i:s'), PDO::PARAM_STR);
 
         foreach ($params as $key => $value) {
             $cleanKey = DbCore::sanitizeToColumnString($key);

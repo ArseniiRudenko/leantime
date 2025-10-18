@@ -229,7 +229,7 @@ class Auth
 
         $stmn = $this->db->database->prepare($query);
         $stmn->bindValue(':user', $username);
-        $stmn->bindValue(':time', date('Y-m-d h:i:s', time()));
+        $stmn->bindValue(':time', gmdate('Y-m-d h:i:s'));
         $stmn->bindValue(':link', $resetLink);
         $result = $stmn->execute();
         $stmn->closeCursor();
@@ -252,7 +252,7 @@ class Auth
             LIMIT 1";
 
         $stmn = $this->db->database->prepare($query);
-        $stmn->bindValue(':time', date('Y-m-d h:i:s', time()), PDO::PARAM_STR);
+        $stmn->bindValue(':time', gmdate('Y-m-d h:i:s'), PDO::PARAM_STR);
         $stmn->bindValue(':hash', $hash, PDO::PARAM_STR);
         $stmn->bindValue(':password', password_hash($password, PASSWORD_DEFAULT), PDO::PARAM_STR);
         $result = $stmn->execute();

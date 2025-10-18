@@ -1794,7 +1794,7 @@ class Tickets
             $stmn->bindValue(':ticketId', $ticketId, PDO::PARAM_INT);
             $stmn->bindValue(':changeType', $field, PDO::PARAM_STR);
             $stmn->bindValue(':changeValue', $value, PDO::PARAM_STR);
-            $stmn->bindValue(':date', date('Y-m-d H:i:s'), PDO::PARAM_STR);
+            $stmn->bindValue(':date', gmdate('Y-m-d H:i:s'), PDO::PARAM_STR);
 
             $stmn->execute();
         }

@@ -165,7 +165,7 @@ class Wiki extends Canvas
         $stmn->bindValue(':title', $wiki->title, PDO::PARAM_STR);
         $stmn->bindValue(':projectId', $wiki->projectId, PDO::PARAM_STR);
         $stmn->bindValue(':author', $wiki->author, PDO::PARAM_STR);
-        $stmn->bindValue(':created', date('Y-m-d'), PDO::PARAM_STR);
+        $stmn->bindValue(':created', gmdate('Y-m-d'), PDO::PARAM_STR);
 
         $execution = $stmn->execute();
 
@@ -236,8 +236,8 @@ class Wiki extends Canvas
         $stmn->bindValue(':parent', $article->parent, PDO::PARAM_INT);
         $stmn->bindValue(':tags', $article->tags, PDO::PARAM_STR);
         $stmn->bindValue(':status', $article->status, PDO::PARAM_STR);
-        $stmn->bindValue(':created', date('Y-m-d'), PDO::PARAM_STR);
-        $stmn->bindValue(':modified', date('Y-m-d'), PDO::PARAM_STR);
+        $stmn->bindValue(':created', gmdate('Y-m-d'), PDO::PARAM_STR);
+        $stmn->bindValue(':modified', gmdate('Y-m-d'), PDO::PARAM_STR);
         $stmn->bindValue(':sortIndex', '10', PDO::PARAM_STR);
 
         $execution = $stmn->execute();
@@ -269,7 +269,7 @@ class Wiki extends Canvas
         $stmn->bindValue(':parent', $article->parent, PDO::PARAM_INT);
         $stmn->bindValue(':tags', $article->tags, PDO::PARAM_STR);
         $stmn->bindValue(':status', $article->status, PDO::PARAM_STR);
-        $stmn->bindValue(':modified', date('Y-m-d'), PDO::PARAM_STR);
+        $stmn->bindValue(':modified', gmdate('Y-m-d'), PDO::PARAM_STR);
         $stmn->bindValue(':id', $article->id, PDO::PARAM_STR);
         $stmn->bindValue(':milestoneId', $article->milestoneId, PDO::PARAM_STR);
 

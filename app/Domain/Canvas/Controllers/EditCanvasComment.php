@@ -220,7 +220,7 @@ class EditCanvasComment extends Controller
         if (isset($params['comment']) === true) {
             $values = [
                 'text' => $params['text'],
-                'date' => date('Y-m-d H:i:s'),
+                'date' => gmdate('Y-m-d H:i:s'),
                 'userId' => (session('userdata.id')),
                 'moduleId' => $_GET['id'],
                 'commentParent' => ($params['father']),

@@ -1641,7 +1641,6 @@ class Projects
                 }
             }
         }
-
         return true;
     }
 
@@ -1796,8 +1795,16 @@ class Projects
         } else {
             $project['end'] = null;
         }
-
         return $project;
+    }
 
+    public function getProjectNames(): array
+    {
+        $rows = $this->projectRepository->getProjectNames();
+        $projectNames = [];
+        foreach ($rows as $row) {
+            $projectNames[$row['id']] = $row['name'];
+        }
+        return $projectNames;
     }
 }

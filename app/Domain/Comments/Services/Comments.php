@@ -50,7 +50,7 @@ class Comments
         if (isset($values['text']) && $values['text'] != '' && isset($values['father']) && isset($module) && isset($entityId) && isset($entity)) {
             $mapper = [
                 'text' => $values['text'],
-                'date' => dtHelper()->dbNow()->formatDateTimeForDb(),
+                'date' => gmdate('Y-m-d H:i:s'),
                 'userId' => (session('userdata.id')),
                 'moduleId' => $entityId,
                 'commentParent' => ($values['father']),

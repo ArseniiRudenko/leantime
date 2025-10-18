@@ -27,7 +27,7 @@ class Queue
         $recipients = array_unique($recipients);
 
         foreach ($recipients as $recipient) {
-            $thedate = date('Y-m-d H:i:s');
+            $thedate = gmdate('Y-m-d H:i:s');
             // NEW : Allowing recipients to be emails or userIds
             // TODO : Accept a list of \user objects too ?
             if (is_int($recipient)) {
@@ -122,7 +122,7 @@ class Queue
                     VALUES
                         (:msghash,:channel,:userId,:subject,:message,:thedate,:projectId)';
 
-        $thedate = date('Y-m-d H:i:s');
+        $thedate = gmdate('Y-m-d H:i:s');
         $msghash = md5($thedate.$subject.$message.$projectId);
 
         $stmn = $this->db->database->prepare($sql);

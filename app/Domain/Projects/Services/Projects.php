@@ -1300,7 +1300,7 @@ class Projects
 
         if ($leantimeFile
             && $this->projectRepository->setPicture($leantimeFile['fileId'], $projectId)
-            && $oldPicture) {
+            && isset($oldPicture)) {
 
             try {
                 $this->fileService->deleteFile($oldPicture);

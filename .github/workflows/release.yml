@@ -44,7 +44,7 @@ jobs:
 
       - name: Make build
         run: |
-          clean build
+          make package
 
       - name: upload zip
         uses: actions/upload-release-asset@v1

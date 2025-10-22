@@ -3,12 +3,14 @@
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Leantime\Core\Configuration\AppSettings;
 use Leantime\Core\Language;
 use Leantime\Core\Support\Build;
 use Leantime\Core\Support\Cast;
 use Leantime\Core\Support\DateTimeHelper;
 use Leantime\Core\Support\Format;
 use Leantime\Core\Support\FromFormat;
+use Leantime\Core\Support\Mix;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 if (! function_exists('__')) {
@@ -92,8 +94,10 @@ if (! function_exists('format')) {
     /**
      * Returns a format object to format string values
      *
-     * @param  string|int|float|DateTime|Carbon|null  $value
-     * @param  string|int|float|DateTime|null  $value2
+     * @param string|int|float|DateTime|Carbon|null $value
+     * @param string|int|float|DateTime|CarbonInterface|null $value2
+     * @param FromFormat|null $fromFormat
+     * @return Format|string
      */
     function format(string|int|float|null|\DateTime|\Carbon\CarbonInterface $value, string|int|float|null|\DateTime|\Carbon\CarbonInterface $value2 = null, ?FromFormat $fromFormat = FromFormat::DbDate): Format|string
     {
@@ -105,14 +109,13 @@ if (! function_exists('cast')) {
     /**
      * Casts a variable to a different type if possible.
      *
-     * @param  mixed  $obj  The object to be cast.
-     * @param  string  $to_class  The class to which the object should be cast.
-     * @param  array  $construct_params  Optional parameters to pass to the constructor.
-     * @param  array  $mappings  Make sure certain sub properties are casted to specific types.
+     * @param mixed $source
+     * @param string $classOrType
+     * @param array $constructParams
+     * @param array $mappings Make sure certain sub properties are casted to specific types.
      * @return mixed The casted object, or throws an exception on failure.
      *
-     * @throws \InvalidArgumentException If the class does not exist.
-     * @throws \RuntimeException|ReflectionException On serialization errors.
+     * @throws ReflectionException On serialization errors.
      */
     function cast(mixed $source, string $classOrType, array $constructParams = [], array $mappings = []): mixed
     {
@@ -153,13 +156,13 @@ if (! function_exists('redirect')) {
     /**
      * Get an instance of the redirector.
      *
-     * @param  string|null  $url
-     * @param  int  $status
-     * @param  array  $headers
-     * @param  bool|null  $secure
-     * @return \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
+     * @param null $url
+     * @param int $http_response_code
+     * @param array $headers
+     * @param null $secure
+     * @return RedirectResponse
      */
-    function redirect($url = null, $http_response_code = 302, $headers = [], $secure = null)
+    function redirect($url = null, int $http_response_code = 302, array $headers = [], $secure = null): RedirectResponse
     {
         return new RedirectResponse(
             trim(preg_replace('/\s\s+/', '', strip_tags($url))),
@@ -172,10 +175,7 @@ if (! function_exists('currentRoute')) {
     /**
      * Get an instance of the redirector.
      *
-     * @param  string|null  $to
-     * @param  int  $status
-     * @param  array  $headers
-     * @param  bool|null  $secure
+     * @return mixed
      */
     function currentRoute()
     {
@@ -190,7 +190,7 @@ if (! function_exists('get_domain_key')) {
     /**
      * Gets a unique instance key determined by domain
      */
-    function get_domain_key()
+    function get_domain_key(): string
     {
 
         // Now that we know where the instance is bing called from
@@ -205,9 +205,7 @@ if (! function_exists('get_domain_key')) {
 
         $domainKeyParts = config('app.url').config('app.key');
         $slug = \Illuminate\Support\Str::slug($domainKeyParts);
-        $domainCacheName = md5($slug);
-
-        return $domainCacheName;
+        return md5($slug);
 
     }
 
@@ -220,14 +218,15 @@ if (! function_exists('mix')) {
      * @return Mix|string
      *
      * @throws BindingResolutionException
+     * @throws Exception
      */
-    function mix(string $path = '', string $manifestDirectory = ''): \Leantime\Core\Support\Mix|string
+    function mix(string $path = '', string $manifestDirectory = ''): Mix|string
     {
-        if (! ($app = app())->bound(\Leantime\Core\Support\Mix::class)) {
-            $app->instance(\Leantime\Core\Support\Mix::class, new \Leantime\Core\Support\Mix);
+        if (! ($app = app())->bound(Mix::class)) {
+            $app->instance(Mix::class, new Mix);
         }
 
-        $mix = $app->make(\Leantime\Core\Support\Mix::class);
+        $mix = $app->make(Mix::class);
 
         if (empty($path)) {
             return $mix;
@@ -241,10 +240,10 @@ if (! function_exists('base_path')) {
     /**
      * Get the path to the base of the install.
      *
-     * @param  string  $path
+     * @param string $path
      * @return string
      */
-    function base_path($path = '')
+    function base_path(string $path = ''): string
     {
         return app()->basePath($path);
     }
@@ -254,13 +253,13 @@ if (! function_exists('redirect')) {
     /**
      * Get an instance of the redirector.
      *
-     * @param  string|null  $url
-     * @param  int  $status
-     * @param  array  $headers
-     * @param  bool|null  $secure
-     * @return \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
+     * @param string|null $url
+     * @param int $http_response_code
+     * @param array $headers
+     * @param null $secure
+     * @return RedirectResponse
      */
-    function redirect($url = null, $http_response_code = 302, $headers = [], $secure = null)
+    function redirect(string $url = null, int $http_response_code = 302, array $headers = [], $secure = null): RedirectResponse
     {
         return new RedirectResponse(
             trim(preg_replace('/\s\s+/', '', strip_tags($url))),
@@ -273,12 +272,9 @@ if (! function_exists('currentRoute')) {
     /**
      * Get an instance of the redirector.
      *
-     * @param  string|null  $to
-     * @param  int  $status
-     * @param  array  $headers
-     * @param  bool|null  $secure
+     * @return mixed
      */
-    function currentRoute()
+    function currentRoute(): mixed
     {
 
         return app('request')->getCurrentRoute();
@@ -294,7 +290,7 @@ if (! function_exists('get_release_version')) {
     function get_release_version()
     {
 
-        $appSettings = app()->make(\Leantime\Core\Configuration\AppSettings::class);
+        $appSettings = app()->make(AppSettings::class);
 
         return $appSettings->appVersion;
 

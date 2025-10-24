@@ -55,7 +55,7 @@ class Notifications
         $query .= ' ORDER BY datetime DESC
                 LIMIT '.$limitStart.', '.$limitEnd.'';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':userId', $userId, PDO::PARAM_INT);
 
         if (is_array($filterOptions) && count($filterOptions) > 0) {
@@ -109,7 +109,7 @@ class Notifications
 
         $sql = substr($sql, 0, -1);
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
 
         foreach ($notifications as $key => $notif) {
             $stmn->bindValue(':userId'.$key, $notif['userId'], PDO::PARAM_INT);
@@ -135,7 +135,7 @@ class Notifications
 
         $sql = 'UPDATE zp_notifications SET `read` = 1 WHERE id = :id';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
 
         $stmn->bindValue(':id', $id, PDO::PARAM_INT);
 
@@ -151,7 +151,7 @@ class Notifications
 
         $sql = 'UPDATE zp_notifications SET `read` = 1 WHERE userId = :id';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
 
         $stmn->bindValue(':id', $userId, PDO::PARAM_INT);
 

@@ -36,7 +36,7 @@ class Sprints
 				WHERE sprint.id = :id
 				LIMIT 1';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':id', $id, PDO::PARAM_INT);
         $stmn->execute();
         $stmn->setFetchMode(PDO::FETCH_CLASS, "Leantime\Domain\Sprints\Models\Sprints");
@@ -67,7 +67,7 @@ class Sprints
         }
         $query .= ' ORDER BY zp_sprints.startDate DESC';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         if ($projectId != null) {
             $stmn->bindValue(':id', $projectId, PDO::PARAM_INT);
@@ -99,7 +99,7 @@ class Sprints
 				WHERE zp_sprints.projectId = :id AND zp_sprints.endDate > NOW()
 				ORDER BY zp_sprints.startDate DESC';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':id', $projectId, PDO::PARAM_INT);
         $stmn->execute();
 
@@ -127,7 +127,7 @@ class Sprints
 				WHERE zp_sprints.projectId = :id
 				AND zp_sprints.startDate < NOW() AND zp_sprints.endDate > NOW() ORDER BY zp_sprints.startDate  LIMIT 1';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':id', $projectId, PDO::PARAM_INT);
         $stmn->execute();
         $stmn->setFetchMode(PDO::FETCH_CLASS, "Leantime\Domain\Sprints\Models\Sprints");
@@ -156,7 +156,7 @@ class Sprints
 				WHERE zp_sprints.projectId = :id
 				AND zp_sprints.startDate > NOW() ORDER BY zp_sprints.startDate ASC LIMIT 1';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':id', $projectId, PDO::PARAM_INT);
         $stmn->execute();
         $stmn->setFetchMode(PDO::FETCH_CLASS, "Leantime\Domain\Sprints\Models\Sprints");
@@ -173,14 +173,14 @@ class Sprints
 
         $query = 'INSERT INTO zp_sprints (name, projectId, startDate, endDate, modified) VALUES (:name, :projectId, :startDate, :endDate, NOW())';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':name', $sprint->name, PDO::PARAM_STR);
         $stmn->bindValue(':projectId', $sprint->projectId, PDO::PARAM_STR);
         $stmn->bindValue(':startDate', $sprint->startDate, PDO::PARAM_STR);
         $stmn->bindValue(':endDate', $sprint->endDate, PDO::PARAM_STR);
 
         $execution = $stmn->execute();
-        $id = $this->db->database->lastInsertId();
+        $id = $this->db->pdo()->lastInsertId();
         $stmn->closeCursor();
 
         return $execution ? $id : false;
@@ -198,7 +198,7 @@ class Sprints
                         modified = NOW()
                         WHERE id = :id';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':name', $sprint->name, PDO::PARAM_STR);
         $stmn->bindValue(':projectId', $sprint->projectId, PDO::PARAM_STR);
         $stmn->bindValue(':startDate', $sprint->startDate, PDO::PARAM_STR);
@@ -220,13 +220,13 @@ class Sprints
                     sprint = ''
                 WHERE sprint = :id";
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':id', $id, PDO::PARAM_STR);
         $stmn->execute();
 
         $query = 'DELETE FROM zp_sprints WHERE id = :id';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':id', $id, PDO::PARAM_STR);
         $stmn->execute();
     }

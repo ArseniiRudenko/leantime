@@ -168,13 +168,7 @@ class EditUser extends Controller
             }
 
             // Get relations to projects
-            $projects = $this->projectsRepo->getUserProjectRelation($id);
-
-            $projectrelation = [];
-
-            foreach ($projects as $projectId) {
-                $projectrelation[] = $projectId['projectId'];
-            }
+            $projectrelation = $this->projectsRepo->getUserProjectRelation($id);
 
             // Assign vars
             $this->tpl->assign('allProjects', $this->projectsRepo->getAll(true));

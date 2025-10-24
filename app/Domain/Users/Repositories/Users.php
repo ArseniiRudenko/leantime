@@ -49,7 +49,7 @@ class Users
 
         $sql = 'SELECT * FROM `zp_user` WHERE id = :id LIMIT 1';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':id', $id, PDO::PARAM_STR);
 
         $stmn->execute();
@@ -69,7 +69,7 @@ class Users
 
         $sql = 'SELECT * FROM `zp_user` WHERE SHA1(CONCAT(id,:sessionSecret)) = :hash';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':hash', $hash, PDO::PARAM_STR);
         $stmn->bindValue(':sessionSecret', $this->config->sessionPassword, PDO::PARAM_STR);
 
@@ -90,7 +90,7 @@ class Users
 
         $sql = 'SELECT  lastlogin FROM `zp_user` Order by lastlogin DESC LIMIT 1';
 
-        $stmn = $this->db->database->query($sql);
+        $stmn = $this->db->pdo()->query($sql);
         $values = $stmn->fetch();
         $stmn->closeCursor();
 
@@ -114,7 +114,7 @@ class Users
 
         $sql .= ' LIMIT 1';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':email', $email, PDO::PARAM_STR);
 
         $stmn->execute();
@@ -142,7 +142,7 @@ class Users
             $sql .= " $condition";
         }
 
-        $stmn = $this->db->database->query($sql);
+        $stmn = $this->db->pdo()->query($sql);
         $values = $stmn->fetch();
         $stmn->closeCursor();
 
@@ -157,7 +157,7 @@ class Users
 
         $sql = 'SELECT
             zp_user.id,
-            IF(zp_user.firstname IS NOT NULL, zp_user.firstname, zp_user.username) AS firstname,
+            zp_user.firstname as firstname,
             zp_user.lastname,
             zp_user.jobTitle,
             zp_user.jobLevel,
@@ -166,7 +166,7 @@ class Users
          FROM zp_user
             ORDER BY lastname';
 
-        $stmn = $this->db->database->query($sql);
+        $stmn = $this->db->pdo()->query($sql);
         $values = $stmn->fetchAll();
         $stmn->closeCursor();
 
@@ -206,7 +206,7 @@ class Users
 
         $query .= ' ORDER BY lastname';
 
-        $stmn = $this->db->database->query($query);
+        $stmn = $this->db->pdo()->query($query);
         $values = $stmn->fetchAll();
         $stmn->closeCursor();
 
@@ -234,7 +234,7 @@ class Users
                     WHERE source <=> :source
                     ORDER BY lastname';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':source', $source, PDO::PARAM_STR);
 
         $stmn->execute();
@@ -269,7 +269,7 @@ class Users
                     WHERE clientId = :clientId
                     ORDER BY lastname';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':clientId', $clientId, PDO::PARAM_STR);
 
         $stmn->execute();
@@ -284,7 +284,7 @@ class Users
 
         $sql = 'SELECT role FROM zp_user WHERE id = :id LIMIT 1';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':id', $userId, PDO::PARAM_STR);
 
         $stmn->execute();
@@ -327,7 +327,7 @@ class Users
                 modified = :modified
              WHERE id = :id LIMIT 1';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':firstname', $values['firstname'], PDO::PARAM_STR);
         $stmn->bindValue(':lastname', $values['lastname'], PDO::PARAM_STR);
         $stmn->bindValue(':username', $values['user'], PDO::PARAM_STR);
@@ -368,7 +368,7 @@ class Users
 
         $query = 'SELECT COUNT(username) AS numUser FROM `zp_user` WHERE username = :username '.$queryOwn.' LIMIT 1';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':username', $username, PDO::PARAM_STR);
 
         if ($userId !== '') {
@@ -405,7 +405,7 @@ class Users
                 modified = :modified
                 WHERE id = :id LIMIT 1';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':firstname', $values['firstname'], PDO::PARAM_STR);
         $stmn->bindValue(':lastname', $values['lastname'], PDO::PARAM_STR);
         $stmn->bindValue(':username', $values['user'], PDO::PARAM_STR);
@@ -465,7 +465,7 @@ class Users
                             :modified
                         )';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         $stmn->bindValue(':firstname', $values['firstname'] ?? '', PDO::PARAM_STR);
         $stmn->bindValue(':lastname', $values['lastname'] ?? '', PDO::PARAM_STR);
@@ -492,7 +492,7 @@ class Users
         $stmn->bindValue(':status', $values['status'] ?? '', PDO::PARAM_STR);
 
         $stmn->execute();
-        $userId = $this->db->database->lastInsertId();
+        $userId = $this->db->pdo()->lastInsertId();
 
         $stmn->closeCursor();
 
@@ -507,7 +507,7 @@ class Users
 
         $query = 'DELETE FROM `zp_user` WHERE zp_user.id = :id';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':id', $id, PDO::PARAM_STR);
 
         $stmn->execute();
@@ -529,7 +529,7 @@ class Users
                         modified = :modified
                     WHERE id = :userId';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':fileId', $fileId, PDO::PARAM_INT);
         $stmn->bindValue(':userId', $id, PDO::PARAM_INT);
         $stmn->bindValue(':modified', dtHelper()->dbNow()->formatDateTimeForDb(), PDO::PARAM_STR);
@@ -550,7 +550,7 @@ class Users
         if ($id !== false) {
             $sql = 'SELECT profileId, firstname, lastname FROM `zp_user` WHERE id = :id LIMIT 1';
 
-            $stmn = $this->db->database->prepare($sql);
+            $stmn = $this->db->pdo()->prepare($sql);
             $stmn->bindValue(':id', $id, PDO::PARAM_INT);
 
             $stmn->execute();
@@ -573,7 +573,7 @@ class Users
 
         $sql .= ' modified =:modified WHERE id=:id LIMIT 1';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':id', $id, PDO::PARAM_STR);
         $stmn->bindValue(':modified', gmdate('Y-m-d H:i:s'), PDO::PARAM_STR);
 
@@ -602,7 +602,7 @@ class Users
     {
         $query = 'SELECT profileId FROM `zp_user` WHERE `firstname` = :firstname AND `lastname` = :lastname';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         $stmn->bindValue(':firstname', $firstname, PDO::PARAM_STR);
         $stmn->bindValue(':lastname', $lastname, PDO::PARAM_STR);
@@ -625,7 +625,7 @@ class Users
     {
         $sql = 'SELECT settings FROM `zp_user` WHERE id = :id LIMIT 1';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':id', $userId, PDO::PARAM_INT);
 
         $stmn->execute();

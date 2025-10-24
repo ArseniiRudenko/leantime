@@ -33,7 +33,7 @@ class Files
 					:encName, :realName, :extension, :module, :moduleId, :userId, NOW()
 				)';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':encName', $values['encName']);
         $stmn->bindValue(':realName', $values['realName']);
         $stmn->bindValue(':extension', $values['extension']);
@@ -44,7 +44,7 @@ class Files
         $stmn->execute();
         $stmn->closeCursor();
 
-        return $this->db->database->lastInsertId();
+        return $this->db->pdo()->lastInsertId();
     }
 
     public function getFile($id): array|false
@@ -57,7 +57,7 @@ class Files
 				INNER JOIN zp_user as user ON file.userId = user.id
 				WHERE file.id=:id';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':id', $id, PDO::PARAM_INT);
 
         $stmn->execute();
@@ -82,7 +82,7 @@ class Files
 
         $sql .= ' ORDER BY file.module, file.moduleId';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->execute();
         $values = $stmn->fetchAll();
         $stmn->closeCursor();
@@ -104,7 +104,7 @@ class Files
             default => 'SELECT headline as title, id FROM zp_tickets WHERE id=:moduleId LIMIT 1',
         };
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
 
         $ids = [];
         foreach ($files as $file) {
@@ -157,7 +157,7 @@ class Files
             $sql .= ' AND userId= :userId';
         }
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         if ($module != '') {
             $stmn->bindValue(':module', $module, PDO::PARAM_STR);
         }
@@ -181,7 +181,7 @@ class Files
     {
         $sql = 'SELECT encName, extension FROM zp_file WHERE id=:id';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':id', $id, PDO::PARAM_INT);
 
         $stmn->execute();
@@ -199,7 +199,7 @@ class Files
 
         $sql = 'DELETE FROM zp_file WHERE id=:id';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':id', $id, PDO::PARAM_INT);
 
         $result = $stmn->execute();

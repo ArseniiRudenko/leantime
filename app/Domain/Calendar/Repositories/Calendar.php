@@ -77,7 +77,7 @@ class Calendar extends RepositoryCore
 
         $query .= ' ORDER BY zp_calendar.dateFrom';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         if (! empty($dateFrom)) {
             $stmn->bindValue(':dateFrom', $dateFrom->format('Y-m-d H:i:s'), PDO::PARAM_STR);
@@ -123,7 +123,7 @@ class Calendar extends RepositoryCore
 
         $query .= ' ORDER BY zp_calendar.dateFrom';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         if (! empty($userId)) {
             $stmn->bindValue(':userId', $userId, PDO::PARAM_INT);
@@ -165,7 +165,7 @@ class Calendar extends RepositoryCore
 
         $sql = "SELECT * FROM zp_calendar WHERE userId = :userId AND dateFrom <> '0000-00-00 00:00:00'";
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':userId', $userId, PDO::PARAM_INT);
 
         $stmn->execute();
@@ -333,7 +333,7 @@ class Calendar extends RepositoryCore
     {
         $query = "SELECT id, headline, dateToFinish FROM zp_tickets WHERE (userId = :userId OR editorId = :userId) AND dateToFinish <> '000-00-00 00:00:00'";
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':userId', session('userdata.id'), PDO::PARAM_INT);
 
         $stmn->execute();
@@ -347,7 +347,7 @@ class Calendar extends RepositoryCore
     {
         $query = "SELECT id, headline, editFrom, editTo FROM zp_tickets WHERE (userId = :userId OR editorId = :userId) AND editFrom <> '000-00-00 00:00:00'";
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':userId', session('userdata.id'), PDO::PARAM_INT);
 
         $stmn->execute();
@@ -361,7 +361,7 @@ class Calendar extends RepositoryCore
     {
         $query = 'INSERT INTO zp_calendar (userId, dateFrom, dateTo, description, allDay) VALUES (:userId, :dateFrom, :dateTo, :description, :allDay)';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':userId', session('userdata.id'), PDO::PARAM_INT);
         $stmn->bindValue(':dateFrom', $values['dateFrom'], PDO::PARAM_STR);
         $stmn->bindValue(':dateTo', $values['dateTo'], PDO::PARAM_STR);
@@ -369,7 +369,7 @@ class Calendar extends RepositoryCore
         $stmn->bindValue(':allDay', $values['allDay'], PDO::PARAM_STR);
 
         if ($stmn->execute()) {
-            $id = $this->db->database->lastInsertId();
+            $id = $this->db->pdo()->lastInsertId();
             $stmn->closeCursor();
 
             return $id;
@@ -384,7 +384,7 @@ class Calendar extends RepositoryCore
     {
         $query = 'SELECT * FROM zp_calendar WHERE id = :id';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':id', $id, PDO::PARAM_INT);
 
         $stmn->execute();
@@ -404,7 +404,7 @@ class Calendar extends RepositoryCore
             allDay = :allDay
         WHERE id = :id AND userId = :userId LIMIT 1';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         $stmn->bindValue(':userId', session('userdata.id'), PDO::PARAM_INT);
         $stmn->bindValue(':id', $id, PDO::PARAM_INT);
@@ -421,7 +421,7 @@ class Calendar extends RepositoryCore
     {
         $query = 'DELETE FROM zp_calendar WHERE id = :id AND userId = :userId LIMIT 1';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':id', $id, PDO::PARAM_INT);
         $stmn->bindValue(':userId', session('userdata.id'), PDO::PARAM_INT);
 
@@ -435,7 +435,7 @@ class Calendar extends RepositoryCore
     {
         $query = 'SELECT id, url, name, colorClass FROM zp_gcallinks WHERE userId = :userId';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':userId', $userId, PDO::PARAM_INT);
 
         $stmn->execute();
@@ -449,7 +449,7 @@ class Calendar extends RepositoryCore
     {
         $query = 'SELECT id, url, name, colorClass FROM zp_gcallinks WHERE userId = :userId AND id = :id LIMIT 1';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':userId', $userId, PDO::PARAM_INT);
         $stmn->bindValue(':id', $calendarId, PDO::PARAM_INT);
 
@@ -464,7 +464,7 @@ class Calendar extends RepositoryCore
     {
         $query = 'SELECT id, url, name, colorClass FROM zp_gcallinks WHERE userId = :userId AND id = :id LIMIT 1';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':userId', session('userdata.id'), PDO::PARAM_INT);
         $stmn->bindValue(':id', $id, PDO::PARAM_INT);
 
@@ -484,7 +484,7 @@ class Calendar extends RepositoryCore
             colorClass = :colorClass
         WHERE userId = :userId AND id = :id LIMIT 1';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':name', $values['name'], PDO::PARAM_STR);
         $stmn->bindValue(':url', $values['url'], PDO::PARAM_STR);
         $stmn->bindValue(':colorClass', $values['colorClass'], PDO::PARAM_STR);
@@ -499,7 +499,7 @@ class Calendar extends RepositoryCore
     {
         $query = 'DELETE FROM zp_gcallinks WHERE userId = :userId AND id = :id LIMIT 1';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         $stmn->bindValue(':id', $id, PDO::PARAM_INT);
         $stmn->bindValue(':userId', session('userdata.id'), PDO::PARAM_INT);
@@ -515,7 +515,7 @@ class Calendar extends RepositoryCore
 
         $query = 'INSERT INTO zp_gcallinks (userId, name, url, colorClass) VALUES (:userId, :name, :url, :colorClass)';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         $stmn->bindValue(':userId', session('userdata.id'), PDO::PARAM_INT);
         $stmn->bindValue(':name', $values['name'], PDO::PARAM_STR);

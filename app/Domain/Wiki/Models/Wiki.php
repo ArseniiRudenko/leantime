@@ -4,17 +4,17 @@ namespace Leantime\Domain\Wiki\Models;
 
 class Wiki
 {
-    public $id;
+    public int $id;
 
-    public $title;
+    public string $title;
 
-    public $author;
+    public int $author;
 
-    public $created;
+    public string $created;
 
-    public $projectId;
+    public int $projectId;
 
-    public $category;
+    public string $category;
 
     public function __construct() {}
 }

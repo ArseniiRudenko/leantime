@@ -109,14 +109,9 @@ class ApiKey extends Controller
                 $this->tpl->setNotification($this->language->__('notifications.key_updated'), 'success', 'apikey_updated');
             }
 
-            // Get relations to projects
-            $projects = $this->projectsRepo->getUserProjectRelation($id);
 
-            $projectrelation = [];
 
-            foreach ($projects as $projectId) {
-                $projectrelation[] = $projectId['projectId'];
-            }
+            $projectrelation = $this->projectsRepo->getUserProjectRelation($id);
 
             // Assign vars
             $this->tpl->assign('allProjects', $this->projectsRepo->getAll());

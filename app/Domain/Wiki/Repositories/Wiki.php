@@ -50,7 +50,7 @@ class Wiki extends Canvas
 
         $query .= ' LIMIT 1';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':projectId', $projectId, PDO::PARAM_INT);
         if ($id > 0) {
             $stmn->bindValue(':id', $id, PDO::PARAM_INT);
@@ -78,7 +78,7 @@ class Wiki extends Canvas
 
 				WHERE zp_canvas.projectId = :projectId AND zp_canvas.type = 'wiki'";
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':projectId', $projectId, PDO::PARAM_INT);
 
         $stmn->execute();
@@ -104,7 +104,7 @@ class Wiki extends Canvas
 
 				WHERE zp_canvas.id = :id AND zp_canvas.type = 'wiki'";
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':id', $id, PDO::PARAM_INT);
 
         $stmn->execute();
@@ -133,7 +133,7 @@ class Wiki extends Canvas
 				  AND box = 'article' AND (status = 'published' OR (status = 'draft' AND author = :authorId) )
 				ORDER BY parent, title";
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':canvasId', $canvasId, PDO::PARAM_INT);
         $stmn->bindValue(':authorId', $userId, PDO::PARAM_INT);
 
@@ -161,7 +161,7 @@ class Wiki extends Canvas
                       :created,
                       'wiki')";
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':title', $wiki->title, PDO::PARAM_STR);
         $stmn->bindValue(':projectId', $wiki->projectId, PDO::PARAM_STR);
         $stmn->bindValue(':author', $wiki->author, PDO::PARAM_STR);
@@ -171,20 +171,17 @@ class Wiki extends Canvas
 
         $stmn->closeCursor();
 
-        return $this->db->database->lastInsertId();
+        return $this->db->pdo()->lastInsertId();
     }
 
     public function updateWiki($wiki, $wikiId): bool
     {
 
         $query = 'UPDATE zp_canvas
-
-                        SET
-                     title = :title
-
+                        SET title = :title
                         WHERE id = :id LIMIT 1';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':title', $wiki->title, PDO::PARAM_STR);
         $stmn->bindValue(':id', $wikiId, PDO::PARAM_STR);
 
@@ -227,7 +224,7 @@ class Wiki extends Canvas
                      :sortIndex
                       )";
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':title', $article->title, PDO::PARAM_STR);
         $stmn->bindValue(':description', $article->description, PDO::PARAM_STR);
         $stmn->bindValue(':data', $article->data, PDO::PARAM_STR);
@@ -244,7 +241,7 @@ class Wiki extends Canvas
 
         $stmn->closeCursor();
 
-        return $this->db->database->lastInsertId();
+        return $this->db->pdo()->lastInsertId();
     }
 
     public function updateArticle(Article $article): bool
@@ -262,7 +259,7 @@ class Wiki extends Canvas
                     milestoneId = :milestoneId
                 WHERE id = :id LIMIT 1';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':title', $article->title, PDO::PARAM_STR);
         $stmn->bindValue(':description', $article->description, PDO::PARAM_STR);
         $stmn->bindValue(':data', $article->data, PDO::PARAM_STR);
@@ -284,7 +281,7 @@ class Wiki extends Canvas
     {
         $query = 'DELETE FROM zp_canvas_items WHERE id = :id LIMIT 1';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         $stmn->bindValue(':id', $id, PDO::PARAM_STR);
 
@@ -298,13 +295,13 @@ class Wiki extends Canvas
 
         $query = 'DELETE FROM zp_canvas_items WHERE canvasId = :id';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':id', $id, PDO::PARAM_STR);
         $stmn->execute();
 
         $query = 'DELETE FROM zp_canvas WHERE id = :id LIMIT 1';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':id', $id, PDO::PARAM_STR);
         $stmn->execute();
 
@@ -327,7 +324,7 @@ class Wiki extends Canvas
             $sql .= ' AND zp_canvas.projectId = :projectId ';
         }
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
 
         if (! is_null($projectId)) {
             $stmn->bindValue(':projectId', $projectId, PDO::PARAM_INT);
@@ -361,7 +358,7 @@ class Wiki extends Canvas
             $sql .= ' AND canvasBoard.projectId = :projectId';
         }
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
 
         if (! is_null($projectId)) {
             $stmn->bindValue(':projectId', $projectId, PDO::PARAM_INT);

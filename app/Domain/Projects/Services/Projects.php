@@ -344,26 +344,6 @@ class Projects
     }
 
     /**
-     * Gets the project IDs assigned to a specified user.
-     *
-     * @param  int  $userId  The ID of the user.
-     * @return false|array The project IDs assigned to the user, or false if no projects are found.
-     *
-     * @api
-     */
-    public function getProjectIdAssignedToUser($userId): false|array
-    {
-
-        $projects = $this->projectRepository->getUserProjectRelation($userId);
-
-        if ($projects) {
-            return $projects;
-        } else {
-            return false;
-        }
-    }
-
-    /**
      * Gets projects assigned to a user.
      *
      * @param  int  $userId  The ID of the user.
@@ -462,7 +442,6 @@ class Projects
             clientId: (int) $clientId,
             accessStatus: 'assigned'
         );
-        $projects = self::dispatch_filter('afterLoadingProjects', $projects);
 
         // Build project hierarchy
         $projectsClean = $this->cleanParentRelationship($projects);
@@ -488,9 +467,9 @@ class Projects
     /**
      * Gets the project hierarchy available to a user.
      *
-     * @param  int  $userId  The ID of the user.
+     * @param int $userId  The ID of the user.
      * @param  string  $projectStatus  The status of the projects to retrieve. Defaults to "open".
-     * @param  int|null  $clientId  The ID of the client. Defaults to null.
+     * @param int|null $clientId  The ID of the client. Defaults to null.
      * @return array Returns an array containing the following keys:
      *               - "allAvailableProjects": An array of all projects available to the user.
      *               - "allAvailableProjectsHierarchy": An array representing the project hierarchy available to the user.
@@ -498,16 +477,15 @@ class Projects
      *
      * @api
      */
-    public function getProjectHierarchyAvailableToUser($userId, string $projectStatus = 'open', $clientId = null): array
+    public function getProjectHierarchyAvailableToUser(int $userId, string $projectStatus = 'open', int $clientId = null): array
     {
-
         // Load all projects user is assigned to
-        $projects = $this->projectRepository->getProjectsUserHasAccessTo(
+        $projects = $this->projectRepository->getUserProjects(
             userId: $userId,
-            status: $projectStatus,
+            projectStatus: $projectStatus,
             clientId: (int) $clientId,
+            accessStatus: "all"
         );
-        $projects = self::dispatch_filter('afterLoadingProjects', $projects);
 
         // Build project hierarchy
         $projectsClean = $this->cleanParentRelationship($projects);
@@ -542,7 +520,6 @@ class Projects
             clientId: null,
             accessStatus: 'all'
         );
-        $projects = self::dispatch_filter('afterLoadingProjects', $projects);
 
         $clients = $this->getClientsFromProjectList($projects);
 
@@ -568,26 +545,15 @@ class Projects
     /**
      * Gets the role of a user in a specific project.
      *
-     * @param  mixed  $userId  The user ID.
-     * @param  mixed  $projectId  The project ID.
-     * @return mixed The role of the user in the project (string) or an empty string if the user is not assigned to the project or if the project role is not defined.
+     * @param  int  $userId  The user ID.
+     * @param  int  $projectId  The project ID.
+     * @return string The role of the user in the project (string) or an empty string if the user is not assigned to the project or if the project role is not defined.
      *
      * @api
      */
-    public function getProjectRole($userId, $projectId): mixed
+    public function getProjectRole($userId, $projectId): string
     {
-
-        $project = $this->projectRepository->getUserProjectRelation($userId, $projectId);
-
-        if (is_array($project)) {
-            if (isset($project[0]['projectRole']) && $project[0]['projectRole'] != '') {
-                return $project[0]['projectRole'];
-            } else {
-                return '';
-            }
-        } else {
-            return '';
-        }
+        return $this->projectRepository->getUserProjectRole($userId, $projectId);
     }
 
     /**
@@ -857,22 +823,7 @@ class Projects
      */
     public function isUserAssignedToProject(int $userId, int $projectId): bool
     {
-
         return $this->projectRepository->isUserAssignedToProject($userId, $projectId);
-    }
-
-    /**
-     * Checks if a user is a member of a specific project.
-     *
-     * @param  int  $userId  - The ID of the user.
-     * @param  int  $projectId  - The ID of the project.
-     * @return bool - Returns true if the user is a member of the project, otherwise false.
-     *
-     * @api
-     */
-    public function isUserMemberOfProject(int $userId, int $projectId): bool
-    {
-        return $this->projectRepository->isUserMemberOfProject($userId, $projectId);
     }
 
     /**

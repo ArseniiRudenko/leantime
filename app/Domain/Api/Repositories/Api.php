@@ -17,7 +17,7 @@ class Api
     {
         $sql = "SELECT * FROM `zp_user` WHERE username = :apiKeyUsername AND source <=> 'api' LIMIT 1";
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':apiKeyUsername', $apiKeyUser);
 
         $stmn->execute();

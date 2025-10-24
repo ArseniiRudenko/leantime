@@ -123,7 +123,7 @@ class Tickets
 				FROM zp_settings WHERE `key` = :key
 				LIMIT 1';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindvalue(':key', 'projectsettings.'.$projectId.'.ticketlabels', PDO::PARAM_STR);
 
         $stmn->execute();
@@ -300,7 +300,7 @@ class Tickets
             $sql .= ' LIMIT :limit';
         }
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':id', $id, PDO::PARAM_STR);
         $stmn->bindValue(':clientId', $user['clientId'] ?? '', PDO::PARAM_STR);
         if ($limit > -1) {
@@ -525,7 +525,7 @@ class Tickets
             }
         }
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         if (isset($searchCriteria['dateFrom']) && $searchCriteria['dateFrom'] != '') {
             $stmn->bindValue(':dateFrom', $searchCriteria['dateFrom'], PDO::PARAM_STR);
@@ -639,7 +639,7 @@ class Tickets
                     zp_tickets.dateToFinish,
                     zp_tickets.projectId,
                     zp_tickets.priority,
-                    IF(zp_tickets.type <> "", zp_tickets.type, "task") AS type,
+                    IF(zp_tickets.type <> '', zp_tickets.type, 'task') AS type,
                     zp_tickets.status,
                     zp_tickets.tags,
                     zp_tickets.userId,
@@ -682,7 +682,7 @@ class Tickets
 
         $query .= ' ORDER BY zp_tickets.dateToFinish DESC, zp_tickets.sortindex ASC, zp_tickets.id DESC';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         if (isset($projectId) && $projectId > 0) {
             $stmn->bindValue(':projectId', $projectId, PDO::PARAM_INT);
@@ -761,7 +761,7 @@ class Tickets
 
         $query .= ' AND ((zp_tickets.editFrom BETWEEN :dateFrom AND :dateTo) OR (zp_tickets.editTo BETWEEN :dateFrom AND :dateTo))';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         if (isset($userId)) {
             $stmn->bindValue(':userId', $userId, PDO::PARAM_INT);
@@ -829,7 +829,7 @@ class Tickets
 					WHERE
 						zp_tickets.projectId = :projectId";
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':projectId', $projectId, PDO::PARAM_INT);
 
         $stmn->execute();
@@ -849,7 +849,7 @@ class Tickets
 					WHERE
 						zp_tickets.projectId = :projectId AND zp_tickets.type <> 'milestone'";
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':projectId', $projectId, PDO::PARAM_INT);
 
         $stmn->execute();
@@ -910,7 +910,7 @@ class Tickets
 						zp_tickets.id = :ticketId
 					LIMIT 1";
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':ticketId', $id, PDO::PARAM_INT);
 
         $stmn->execute();
@@ -964,7 +964,7 @@ class Tickets
 						zp_tickets.dependingTicketId = :ticketId
 					ORDER BY zp_tickets.date DESC";
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':ticketId', $id, PDO::PARAM_INT);
 
         $stmn->execute();
@@ -1026,7 +1026,7 @@ class Tickets
 
         $query .= ' ORDER BY zp_tickets.date DESC';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         $stmn->bindValue(':ticketId', $ticket->id ?? 0, PDO::PARAM_INT);
         $stmn->bindValue(':dependingId', $ticket->dependingTicketId ?? null, PDO::PARAM_INT);
@@ -1187,7 +1187,7 @@ class Tickets
             $query .= ' ORDER BY zp_tickets.date DESC, zp_tickets.sortindex ASC, zp_tickets.id DESC';
         }
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         // NOTE: This should not be removed as it is used for authorization
         if (isset($searchCriteria['currentUser'])) {
@@ -1326,7 +1326,7 @@ class Tickets
 					    zp_tickets.date ASC
 					LIMIT 1";
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':projectId', $projectId, PDO::PARAM_INT);
 
         $stmn->execute();
@@ -1351,7 +1351,7 @@ class Tickets
             $query .= 'AND zp_tickets.projectId = :projectId ';
         }
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         if (! is_null($projectId)) {
             $stmn->bindValue(':projectId', $projectId, PDO::PARAM_INT);
@@ -1379,7 +1379,7 @@ class Tickets
             $query .= 'AND zp_tickets.projectId = :projectId ';
         }
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         if (! is_null($projectId)) {
             $stmn->bindValue(':projectId', $projectId, PDO::PARAM_INT);
@@ -1409,7 +1409,7 @@ class Tickets
 					    zp_tickets.date ASC
 					LIMIT 1';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':projectId', $projectId, PDO::PARAM_INT);
 
         $stmn->execute();
@@ -1436,7 +1436,7 @@ class Tickets
 					    zp_tickets.date ASC
 					LIMIT 1';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':projectId', $projectId, PDO::PARAM_INT);
         $stmn->bindValue(':avgStorySize', $averageStorySize, PDO::PARAM_INT);
 
@@ -1461,7 +1461,7 @@ class Tickets
 					    zp_tickets.date ASC
 					LIMIT 1";
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':projectId', $projectId, PDO::PARAM_INT);
         $stmn->bindValue(':avgStorySize', $averageStorySize, PDO::PARAM_INT);
 
@@ -1486,7 +1486,7 @@ class Tickets
 					    zp_tickets.date ASC
 					LIMIT 1";
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':projectId', $projectId, PDO::PARAM_INT);
 
         $stmn->execute();
@@ -1553,7 +1553,7 @@ class Tickets
                         :modified
 				)';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         $stmn->bindValue(':headline', $values['headline'], PDO::PARAM_STR);
         $stmn->bindValue(':type', $values['type'], PDO::PARAM_STR);
@@ -1591,8 +1591,8 @@ class Tickets
 
         $stmn->closeCursor();
 
-        if ($this->db->database->lastInsertId() !== false) {
-            return intval($this->db->database->lastInsertId());
+        if ($this->db->pdo()->lastInsertId() !== false) {
+            return intval($this->db->pdo()->lastInsertId());
         }
 
         return false;
@@ -1615,7 +1615,7 @@ class Tickets
 
         $sql .= 'id=:id, modified=:modified WHERE id=:id LIMIT 1';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':id', $id, PDO::PARAM_STR);
         $stmn->bindValue(':modified', dtHelper()->userNow()->formatDateTimeForDb(), PDO::PARAM_STR);
 
@@ -1661,7 +1661,7 @@ class Tickets
                 modified = :modified
 			WHERE id = :id LIMIT 1';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         $stmn->bindValue(':headline', $values['headline'], PDO::PARAM_STR);
         $stmn->bindValue(':type', $values['type'], PDO::PARAM_STR);
@@ -1706,7 +1706,7 @@ class Tickets
 					WHERE id = :ticketId
 					LIMIT 1';
 
-            $stmn = $this->db->database->prepare($query);
+            $stmn = $this->db->pdo()->prepare($query);
             $stmn->bindValue(':status', $status, PDO::PARAM_INT);
             $stmn->bindValue(':sortIndex', $ticketSorting, PDO::PARAM_INT);
             $stmn->bindValue(':ticketId', $ticketId, PDO::PARAM_INT);
@@ -1719,7 +1719,7 @@ class Tickets
 					WHERE id = :ticketId
 					LIMIT 1';
 
-            $stmn = $this->db->database->prepare($query);
+            $stmn = $this->db->pdo()->prepare($query);
             $stmn->bindValue(':status', $status, PDO::PARAM_INT);
             $stmn->bindValue(':ticketId', $ticketId, PDO::PARAM_INT);
             $stmn->bindValue(':modified', dtHelper()->userNow()->formatDateTimeForDb(), PDO::PARAM_STR);
@@ -1761,7 +1761,7 @@ class Tickets
 
         $sql = 'SELECT * FROM zp_tickets WHERE id=:ticketId LIMIT 1';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':ticketId', $ticketId, PDO::PARAM_INT);
 
         $stmn->execute();
@@ -1787,7 +1787,7 @@ class Tickets
 					:userId, :ticketId, :changeType, :changeValue, :date
 				)';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
 
         foreach ($changedFields as $field => $value) {
             $stmn->bindValue(':userId', $userId, PDO::PARAM_INT);
@@ -1810,7 +1810,7 @@ class Tickets
 
         $query = 'DELETE FROM zp_tickets WHERE id = :id';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':id', $id, PDO::PARAM_STR);
         $result = $stmn->execute();
         $stmn->closeCursor();
@@ -1836,7 +1836,7 @@ class Tickets
                     modified = :modified
                 WHERE milestoneid = :id";
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':id', $id, PDO::PARAM_STR);
         $stmn->bindValue(':modified', dtHelper()->userNow()->formatDateTimeForDb(), PDO::PARAM_STR);
         $stmn->execute();
@@ -1846,13 +1846,13 @@ class Tickets
                     milestoneid = ''
                 WHERE milestoneid = :id";
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':id', $id, PDO::PARAM_STR);
         $stmn->execute();
 
         $query = 'DELETE FROM zp_tickets WHERE id = :id';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':id', $id, PDO::PARAM_STR);
         $stmn->execute();
 

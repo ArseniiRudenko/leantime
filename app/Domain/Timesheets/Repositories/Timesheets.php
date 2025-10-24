@@ -223,7 +223,7 @@ class Timesheets extends Repository
                 zp_timesheets.description,
                 zp_timesheets.kind';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         if (session()->exists('userdata')) {
             $stmn->bindValue(':requesterRole', session('userdata.role'), PDO::PARAM_INT);

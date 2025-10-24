@@ -28,7 +28,7 @@ class Reactions
                     VALUES
                         (:module,:moduleId,:userId,:reaction,:date)';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':module', $module, PDO::PARAM_STR);
         $stmn->bindValue(':moduleId', $moduleId, PDO::PARAM_INT);
         $stmn->bindValue(':userId', $userId, PDO::PARAM_INT);
@@ -57,7 +57,7 @@ class Reactions
 					WHERE module=:module AND moduleId=:moduleId
 					GROUP BY reaction';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':module', $module, PDO::PARAM_STR);
         $stmn->bindValue(':moduleId', $moduleId, PDO::PARAM_STR);
 
@@ -97,7 +97,7 @@ class Reactions
             $sql .= ' AND reaction = :reaction';
         }
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':userId', $userId, PDO::PARAM_STR);
 
         if ($module != '') {
@@ -125,7 +125,7 @@ class Reactions
 
         $sql = 'DELETE FROM zp_reactions WHERE id = :id LIMIT 1';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':id', $id, PDO::PARAM_INT);
 
         $return = $stmn->execute();
@@ -147,7 +147,7 @@ class Reactions
                           AND reaction = :reaction
                          LIMIT 1';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':module', $module, PDO::PARAM_STR);
         $stmn->bindValue(':moduleId', $moduleId, PDO::PARAM_INT);
         $stmn->bindValue(':userId', $userId, PDO::PARAM_INT);
@@ -174,7 +174,7 @@ class Reactions
 
         $sql .= ' GROUP BY reaction collate utf8mb4_bin;';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':module', $module, PDO::PARAM_STR);
 
         if ($moduleId != null) {

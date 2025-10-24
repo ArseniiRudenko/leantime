@@ -59,7 +59,7 @@ class Ideas
                 WHERE type = 'idea' AND zp_canvas.id = :canvasId
                 ORDER BY zp_canvas.title, zp_canvas.created";
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':canvasId', $canvasId, PDO::PARAM_STR);
 
         $stmn->execute();
@@ -82,7 +82,7 @@ class Ideas
 				FROM zp_settings WHERE `key` = :key
 				LIMIT 1';
 
-            $stmn = $this->db->database->prepare($sql);
+            $stmn = $this->db->pdo()->prepare($sql);
             $stmn->bindvalue(':key', 'projectsettings.'.session('currentProject').'.idealabels', PDO::PARAM_STR);
 
             $stmn->execute();
@@ -131,7 +131,7 @@ class Ideas
 				WHERE type = 'idea' AND projectId = :projectId
 				ORDER BY zp_canvas.title, zp_canvas.created";
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':projectId', $projectId, PDO::PARAM_STR);
 
         $stmn->execute();
@@ -146,13 +146,13 @@ class Ideas
 
         $query = 'DELETE FROM zp_canvas_items WHERE canvasId = :id';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':id', $id, PDO::PARAM_STR);
         $stmn->execute();
 
         $query = 'DELETE FROM zp_canvas WHERE id = :id LIMIT 1';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':id', $id, PDO::PARAM_STR);
         $stmn->execute();
 
@@ -176,7 +176,7 @@ class Ideas
 						:projectId
 				)";
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         $stmn->bindValue(':title', $values['title'], PDO::PARAM_STR);
         $stmn->bindValue(':projectId', $values['projectId'], PDO::PARAM_STR);
@@ -186,7 +186,7 @@ class Ideas
 
         $stmn->closeCursor();
 
-        return $this->db->database->lastInsertId();
+        return $this->db->pdo()->lastInsertId();
     }
 
     public function updateCanvas($values): mixed
@@ -221,7 +221,7 @@ class Ideas
 					tags = :tags
 					WHERE id = :id LIMIT 1	';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
 
         $stmn->bindValue(':id', $values['itemId'], PDO::PARAM_STR);
         $stmn->bindValue(':description', $values['description'], PDO::PARAM_STR);
@@ -251,7 +251,7 @@ class Ideas
 
         $sql .= 'id=:id WHERE id=:id LIMIT 1';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':id', $id, PDO::PARAM_STR);
 
         foreach ($params as $key => $value) {
@@ -278,7 +278,7 @@ class Ideas
 
         $sql .= ' ON DUPLICATE KEY UPDATE sortindex = VALUES(sortindex)';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
 
         $return = $stmn->execute();
         $stmn->closeCursor();
@@ -322,7 +322,7 @@ class Ideas
 				GROUP BY zp_canvas_items.id
 				ORDER BY zp_canvas_items.sortindex";
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':id', $id, PDO::PARAM_STR);
 
         $stmn->execute();
@@ -364,7 +364,7 @@ class Ideas
 				WHERE zp_canvas_items.id = :id
 				';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':id', $id, PDO::PARAM_INT);
 
         $stmn->execute();
@@ -403,7 +403,7 @@ class Ideas
 						:milestoneId
 				)';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         $stmn->bindValue(':description', $values['description'], PDO::PARAM_STR);
         $stmn->bindValue(':assumptions', $values['assumptions'] ?? '', PDO::PARAM_STR);
@@ -416,7 +416,7 @@ class Ideas
         $stmn->bindValue(':milestoneId', $values['milestoneId'] ?? '', PDO::PARAM_STR);
 
         $stmn->execute();
-        $id = $this->db->database->lastInsertId();
+        $id = $this->db->pdo()->lastInsertId();
         $stmn->closeCursor();
 
         return $id;
@@ -426,7 +426,7 @@ class Ideas
     {
         $query = 'DELETE FROM zp_canvas_items WHERE id = :id LIMIT 1';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         $stmn->bindValue(':id', $id, PDO::PARAM_STR);
 
@@ -443,7 +443,7 @@ class Ideas
 					  WHERE id = :id LIMIT 1
                 ';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':status', $status, PDO::PARAM_STR);
 
         $stmn->bindValue(':id', $ideaId, PDO::PARAM_INT);
@@ -471,7 +471,7 @@ class Ideas
             $sql .= ' AND canvasBoard.projectId = :projectId';
         }
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
 
         if (! is_null($projectId)) {
             $stmn->bindValue(':projectId', $projectId, PDO::PARAM_INT);
@@ -505,7 +505,7 @@ class Ideas
             $sql .= ' WHERE zp_canvas.projectId = :projectId';
         }
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
 
         if (! is_null($projectId)) {
             $stmn->bindValue(':projectId', $projectId, PDO::PARAM_INT);
@@ -584,7 +584,7 @@ class Ideas
             $sql .= ' AND (zp_canvas.id = :boardId)';
         }
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
 
         $stmn->bindValue(':clientId', session('userdata.clientId') ?? '-1', PDO::PARAM_INT);
         $stmn->bindValue(':userId', session('userdata.id') ?? '-1', PDO::PARAM_INT);

@@ -30,7 +30,7 @@ class TicketHistory
 
         $query .= ' ORDER BY dateModified DESC';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':startingFrom', $startingFrom->format('Y-m-d'), PDO::PARAM_STR);
 
         if ($ticketId !== null) {

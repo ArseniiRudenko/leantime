@@ -2,6 +2,7 @@
 
 namespace Leantime\Core\Db;
 
+use Closure;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Support\Facades\Log;
@@ -28,11 +29,11 @@ class Db
     /**
      * __construct - connect to database and select database
      *
-     * @param  object  $app  Application container
-     * @param  string  $connection  Connection name
+     * @param object $app Application container
+     * @param string $connection Connection name
      * @return void
      */
-    public function __construct($app, $connection = 'mysql')
+    public function __construct($app, string $connection = 'mysql')
     {
         // Get Laravel's database manager from the container
         $this->dbManager = $app['db'];
@@ -41,23 +42,9 @@ class Db
         try {
             $this->connection = $this->dbManager->connection($connection);
         } catch (\PDOException $e) {
-            Log::error("Can't connect to database");
-            throw new \Exception($e);
+            Log::error("Can't connect to database: ".$e->getMessage());
+            throw $e;
         }
-    }
-
-    /**
-     * Get the PDO connection (lazily retrieved from Laravel's connection pool)
-     *
-     * @return PDO
-     */
-    public function __get($name)
-    {
-        if ($name === 'database') {
-            return $this->connection->getPdo();
-        }
-
-        return null;
     }
 
     /**
@@ -66,6 +53,14 @@ class Db
     public function getConnection(): ConnectionInterface
     {
         return $this->connection;
+    }
+
+    /**
+     * Get the PDO instance
+     */
+    public function pdo(): Closure|PDO
+    {
+        return $this->connection->getPdo();
     }
 
     /**

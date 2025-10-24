@@ -76,7 +76,7 @@ abstract class Repository
                     4
                 );
 
-                $this->stmn = $this->db->database->prepare($sql, $args);
+                $this->stmn = $this->db->pdo()->prepare($sql, $args);
             }
 
             /**
@@ -103,7 +103,7 @@ abstract class Repository
              */
             public function lastInsertId(): mixed
             {
-                return $this->db->database->lastInsertId();
+                return $this->db->pdo()->lastInsertId();
             }
 
             /**

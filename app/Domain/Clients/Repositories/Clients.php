@@ -61,7 +61,7 @@ class Clients extends Repository
 				LIMIT 1
 				';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':id', $id, PDO::PARAM_STR);
 
         $stmn->execute();
@@ -99,7 +99,7 @@ class Clients extends Repository
 						zp_clients.internet
 				ORDER BY zp_clients.name';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         $stmn->execute();
         $values = $stmn->fetchAll();
@@ -116,7 +116,7 @@ class Clients extends Repository
 
         $sql = 'SELECT COUNT(id) AS clientCount FROM `zp_clients`';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
 
         $stmn->execute();
         $values = $stmn->fetch();
@@ -135,7 +135,7 @@ class Clients extends Repository
         $sql = 'SELECT name, street FROM zp_clients WHERE
 			name = :name AND street = :street LIMIT 1';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':name', $values['name'], PDO::PARAM_STR);
         $stmn->bindValue(':street', $values['street'], PDO::PARAM_STR);
 
@@ -166,7 +166,7 @@ class Clients extends Repository
                     FROM zp_user WHERE clientId = :clientId
                     AND !(source <=> 'api') ";
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':clientId', $clientId, PDO::PARAM_STR);
 
         $stmn->execute();
@@ -188,7 +188,7 @@ class Clients extends Repository
 					:name, :street, :zip, :city, :state, :country, :phone, :internet, :email
 				)';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':name', $values['name'], PDO::PARAM_STR);
         $stmn->bindValue(':street', $values['street'] ?? '', PDO::PARAM_STR);
         $stmn->bindValue(':zip', $values['zip'] ?? '', PDO::PARAM_STR);
@@ -201,7 +201,7 @@ class Clients extends Repository
 
         $stmn->execute();
 
-        $id = $this->db->database->lastInsertId();
+        $id = $this->db->pdo()->lastInsertId();
         $stmn->closeCursor();
 
         return $id;
@@ -225,7 +225,7 @@ class Clients extends Repository
 			 	email = :email
 			 WHERE id = :id LIMIT 1';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':name', $values['name'], PDO::PARAM_STR);
         $stmn->bindValue(':street', $values['street'], PDO::PARAM_STR);
         $stmn->bindValue(':zip', $values['zip'], PDO::PARAM_STR);
@@ -251,7 +251,7 @@ class Clients extends Repository
 
         $query = 'DELETE zp_clients, zp_projects FROM zp_clients LEFT JOIN zp_projects ON zp_clients.id = zp_projects.clientId WHERE zp_clients.id = :id';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':id', $id, PDO::PARAM_STR);
         $result = $stmn->execute();
         $stmn->closeCursor();
@@ -267,7 +267,7 @@ class Clients extends Repository
 
         $query = 'SELECT zp_projects.id FROM zp_projects JOIN zp_tickets ON zp_projects.id = zp_tickets.projectId WHERE zp_projects.clientId = :id';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':id', $id, PDO::PARAM_STR);
         $stmn->execute();
         $values = $stmn->fetchAll();

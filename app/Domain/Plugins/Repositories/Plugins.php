@@ -43,7 +43,7 @@ class Plugins
 
         $query .= ' GROUP BY name ';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         $stmn->execute();
         $stmn->setFetchMode(PDO::FETCH_CLASS, InstalledPlugin::class);
@@ -74,7 +74,7 @@ class Plugins
 
                 FROM zp_plugins WHERE id = :id';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         $stmn->bindValue(':id', $id, PDO::PARAM_INT);
 
@@ -112,7 +112,7 @@ class Plugins
                 :format
             )';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':name', $plugin->name, PDO::PARAM_STR);
         $stmn->bindValue(':enabled', $plugin->enabled, PDO::PARAM_STR);
         $stmn->bindValue(':description', $plugin->description, PDO::PARAM_STR);
@@ -126,7 +126,7 @@ class Plugins
 
         $stmn->execute();
 
-        $id = $this->db->database->lastInsertId();
+        $id = $this->db->pdo()->lastInsertId();
         $stmn->closeCursor();
 
         return $id;
@@ -140,7 +140,7 @@ class Plugins
                 WHERE id = :id
             ';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':id', $id, PDO::PARAM_INT);
 
         $result = $stmn->execute();
@@ -158,7 +158,7 @@ class Plugins
                 WHERE id = :id
             ';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':id', $id, PDO::PARAM_INT);
 
         $result = $stmn->execute();
@@ -175,7 +175,7 @@ class Plugins
                 WHERE id = :id LIMIT 1
             ';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':id', $id, PDO::PARAM_INT);
 
         $result = $stmn->execute();

@@ -238,7 +238,7 @@ class Template
         $viewFactory = app('view');
 
         /** @var View $view */
-        $view = app('view')->make($loadFile);
+        $view = $viewFactory->make($loadFile);
 
         $path = $view->getPath();
 

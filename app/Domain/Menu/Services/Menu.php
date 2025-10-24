@@ -26,8 +26,11 @@ class Menu
     private Setting $settingSvc;
 
     /**
-     * @param  TimesheetRepository  $timesheetsRepo
-     * @param  SettingRepository  $settingsRepo
+     * @param ProjectService $projectService
+     * @param TimesheetService $timesheetService
+     * @param SprintService $sprintService
+     * @param Users $userService
+     * @param Setting $settingSvc
      */
     public function __construct(
         ProjectService $projectService,
@@ -46,14 +49,6 @@ class Menu
 
     public function getUserProjectList(int $userId, null|int|string $client = null): array
     {
-
-        $allAssignedprojects =
-        $allAvailableProjects =
-        $recentProjects =
-        $returnVars = [];
-
-        $user = $this->userService->getUser($userId);
-
         $projects = $this->projectService->getProjectHierarchyAssignedToUser($userId, 'open', $client);
         $allAssignedprojects = $projects['allAssignedProjects'];
         $allAssignedprojectsHierarchy = $projects['allAssignedProjectsHierarchy'];

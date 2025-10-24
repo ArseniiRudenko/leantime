@@ -39,7 +39,7 @@ class Entityrelations
 				FROM zp_settings WHERE `key` = :key
 				LIMIT 1';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindvalue(':key', $type, PDO::PARAM_STR);
 
         try {
@@ -71,7 +71,7 @@ class Entityrelations
 				VALUES (:key, :value) ON DUPLICATE KEY UPDATE
 				  `value` = :valueUpdate';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindvalue(':key', $type, PDO::PARAM_STR);
         $stmn->bindvalue(':value', $value, PDO::PARAM_STR);
         $stmn->bindvalue(':valueUpdate', $value, PDO::PARAM_STR);
@@ -87,7 +87,7 @@ class Entityrelations
 
         $sql = 'DELETE FROM zp_settings WHERE `key` = :key LIMIT 1';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindvalue(':key', $type, PDO::PARAM_STR);
 
         $stmn->execute();
@@ -105,7 +105,7 @@ class Entityrelations
         }
 
         try {
-            $stmn = $this->db->database->prepare("SHOW TABLES LIKE 'zp_user'");
+            $stmn = $this->db->pdo()->prepare("SHOW TABLES LIKE 'zp_user'");
 
             $stmn->execute();
             $values = $stmn->fetchAll();
@@ -117,7 +117,7 @@ class Entityrelations
                 return false;
             }
 
-            $stmn = $this->db->database->prepare('SELECT COUNT(*) FROM zp_user');
+            $stmn = $this->db->pdo()->prepare('SELECT COUNT(*) FROM zp_user');
 
             $stmn->execute();
             $values = $stmn->fetchAll();

@@ -4,3 +4,6 @@
 [submodule "app/Plugins/GiteaListener"]
 	path = app/Plugins/GiteaListener
 	url = git@github.com:ArseniiRudenko/GiteaListener.git
+[submodule "app/Plugins/LeanGroups"]
+	path = app/Plugins/LeanGroups
+	url = git@github.com:ArseniiRudenko/LeanGroups.git

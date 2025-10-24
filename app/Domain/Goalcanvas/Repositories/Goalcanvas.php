@@ -107,7 +107,7 @@ class Goalcanvas extends Canvas
 
                 ";
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':id', $milestoneId, PDO::PARAM_STR);
 
         $stmn->execute();
@@ -135,7 +135,7 @@ class Goalcanvas extends Canvas
                 WHERE type = '".static::CANVAS_NAME."canvas' AND zp_canvas.id = :canvasId
                 ORDER BY zp_canvas.title, zp_canvas.created";
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':canvasId', $canvasId, PDO::PARAM_STR);
 
         $stmn->execute();
@@ -207,7 +207,7 @@ class Goalcanvas extends Canvas
             $sql .= ' AND (zp_canvas.id = :boardId)';
         }
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
 
         if (session()->exists('userdata')) {
             $stmn->bindValue(':requesterRole', session('userdata.role'), PDO::PARAM_INT);
@@ -298,7 +298,7 @@ class Goalcanvas extends Canvas
                         :tags
                 )';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         $stmn->bindValue(':description', $values['description'] ?? '', PDO::PARAM_STR);
         $stmn->bindValue(':title', $values['title'] ?? '', PDO::PARAM_STR);
@@ -329,7 +329,7 @@ class Goalcanvas extends Canvas
         $stmn->bindValue(':tags', $values['tags'] ?? '', PDO::PARAM_STR);
 
         $stmn->execute();
-        $id = $this->db->database->lastInsertId();
+        $id = $this->db->pdo()->lastInsertId();
         $stmn->closeCursor();
 
         return $id;

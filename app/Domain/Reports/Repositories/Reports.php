@@ -79,7 +79,7 @@ class Reports
             $query .= ' GROUP BY projectId';
         }
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         $stmn->bindValue(':projectId', $projectId, PDO::PARAM_INT);
 
@@ -116,7 +116,7 @@ class Reports
             $query .= ' GROUP BY projectId';
         }
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         $stmn->bindValue(':storyPoints', $storyPoints, PDO::PARAM_STR);
         $stmn->bindValue(':projectId', $projectId, PDO::PARAM_STR);
@@ -156,7 +156,7 @@ class Reports
 
         $query = 'SELECT * FROM zp_stats WHERE DATE(date) = DATE(NOW() - INTERVAL 1 DAY) AND projectId = :projectId LIMIT 2';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':projectId', $projectId, PDO::PARAM_INT);
 
         $stmn->execute();
@@ -235,7 +235,7 @@ class Reports
                                :daily_avg_hours_remaining_todo,
                                :sum_teammembers)';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':sprintId', $report->sprintId, PDO::PARAM_INT);
         $stmn->bindValue(':projectId', $report->projectId, PDO::PARAM_INT);
         $stmn->bindValue(':date', $report->date, PDO::PARAM_STR);
@@ -280,7 +280,7 @@ class Reports
 
         $query = 'SELECT * FROM zp_stats WHERE sprintId = :sprint ORDER BY date ASC';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':sprint', $sprint, PDO::PARAM_INT);
 
         $stmn->execute();
@@ -297,7 +297,7 @@ class Reports
 
         $query = 'SELECT * FROM zp_stats WHERE projectId = :project AND sprintId = 0 ORDER BY date ASC LIMIT 95 ';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':project', $project, PDO::PARAM_INT);
 
         $stmn->execute();
@@ -344,7 +344,7 @@ class Reports
                         GROUP BY date
                         ORDER BY date DESC LIMIT 120';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':project', $project, PDO::PARAM_INT);
 
         $stmn->execute();

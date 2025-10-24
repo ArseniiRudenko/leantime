@@ -105,7 +105,7 @@ class Auth
     {
         $query = "UPDATE zp_user SET session = '' WHERE session = :sessionid LIMIT 1";
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':sessionid', $sessionId);
         $result = $stmn->execute();
         $stmn->closeCursor();
@@ -120,7 +120,7 @@ class Auth
     {
         $query = "UPDATE zp_user SET session = '' WHERE (".time().' - sessionTime) > '.$this->config->sessionExpiration;
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $result = $stmn->execute();
         $stmn->closeCursor();
 
@@ -163,7 +163,7 @@ class Auth
                 id =  :id
             LIMIT 1';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         $stmn->bindValue(':id', $userId, PDO::PARAM_INT);
         $stmn->bindValue(':sessionid', $sessionid);
@@ -183,7 +183,7 @@ class Auth
 
         $query = "SELECT id FROM zp_user WHERE pwReset = :resetLink AND status LIKE 'a' LIMIT 1";
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':resetLink', $hash);
 
         $stmn->execute();
@@ -205,7 +205,7 @@ class Auth
 
         $query = "SELECT * FROM zp_user WHERE pwReset = :resetLink AND status LIKE 'i' LIMIT 1";
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':resetLink', $hash, PDO::PARAM_STR);
 
         $stmn->execute();
@@ -227,7 +227,7 @@ class Auth
                 username = :user
             LIMIT 1';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':user', $username);
         $stmn->bindValue(':time', gmdate('Y-m-d h:i:s'));
         $stmn->bindValue(':link', $resetLink);
@@ -251,7 +251,7 @@ class Auth
                 pwReset = :hash
             LIMIT 1";
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':time', gmdate('Y-m-d h:i:s'), PDO::PARAM_STR);
         $stmn->bindValue(':hash', $hash, PDO::PARAM_STR);
         $stmn->bindValue(':password', password_hash($password, PASSWORD_DEFAULT), PDO::PARAM_STR);

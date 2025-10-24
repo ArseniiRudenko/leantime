@@ -48,7 +48,7 @@ class Queue
             $userEmail = $theuser['username'];
             $msghash = md5($thedate.$subject.$message.$userEmail.$projectId);
 
-            $stmn = $this->db->database->prepare($sql);
+            $stmn = $this->db->pdo()->prepare($sql);
             $stmn->bindValue(':msghash', $msghash, PDO::PARAM_STR);
             $stmn->bindValue(':channel', Workers::EMAILS->value, PDO::PARAM_STR);
             $stmn->bindValue(':userId', $userId, PDO::PARAM_INT);
@@ -79,7 +79,7 @@ class Queue
                 FROM zp_queue
                 WHERE channel = :channel ORDER BY userId, projectId ASC, thedate ASC';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
 
         $stmn->bindValue(':channel', $channel->value, PDO::PARAM_STR);
         $stmn->execute();
@@ -100,7 +100,7 @@ class Queue
 
         $sql = 'DELETE FROM zp_queue WHERE msghash=:msghash';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         foreach ($thehashes as $msghash) {
             $stmn->bindValue(':msghash', $msghash, PDO::PARAM_STR);
             $result = $stmn->execute();
@@ -125,7 +125,7 @@ class Queue
         $thedate = gmdate('Y-m-d H:i:s');
         $msghash = md5($thedate.$subject.$message.$projectId);
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':msghash', $msghash, PDO::PARAM_STR);
         $stmn->bindValue(':channel', $channel->value, PDO::PARAM_STR);
         $stmn->bindValue(':userId', $userId, PDO::PARAM_INT);

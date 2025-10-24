@@ -25,7 +25,7 @@ class AccessTokenRepository
                 VALUES
                 (:tokenable_type, :tokenable_id, :name, :token, :abilities, NOW())';
 
-        $statement = $this->db->database->prepare($query);
+        $statement = $this->db->pdo()->prepare($query);
         $statement->bindValue(':tokenable_type', 'Leantime\\Domain\\Auth\\Services\\Auth', PDO::PARAM_STR);
         $statement->bindValue(':tokenable_id', $userId, PDO::PARAM_INT);
         $statement->bindValue(':name', $name, PDO::PARAM_STR);
@@ -33,7 +33,7 @@ class AccessTokenRepository
         $statement->bindValue(':abilities', json_encode($abilities), PDO::PARAM_STR);
 
         $statement->execute();
-        $id = $this->db->database->lastInsertId();
+        $id = $this->db->pdo()->lastInsertId();
 
         return [
             'id' => $id,
@@ -46,7 +46,7 @@ class AccessTokenRepository
         $hashedToken = hash('sha256', $token);
 
         $query = 'SELECT * FROM zp_access_tokens WHERE token = :token';
-        $statement = $this->db->database->prepare($query);
+        $statement = $this->db->pdo()->prepare($query);
         $statement->bindValue(':token', $hashedToken, PDO::PARAM_STR);
         $statement->execute();
 
@@ -59,7 +59,7 @@ class AccessTokenRepository
     {
 
         $query = 'SELECT * FROM zp_access_tokens WHERE id = :tokenId';
-        $statement = $this->db->database->prepare($query);
+        $statement = $this->db->pdo()->prepare($query);
         $statement->bindValue(':tokenId', $tokenId, PDO::PARAM_INT);
         $statement->execute();
 
@@ -71,7 +71,7 @@ class AccessTokenRepository
     public function deleteToken(int $id): bool
     {
         $query = 'DELETE FROM zp_access_tokens WHERE id = :id';
-        $statement = $this->db->database->prepare($query);
+        $statement = $this->db->pdo()->prepare($query);
         $statement->bindValue(':id', $id, PDO::PARAM_INT);
 
         return $statement->execute();
@@ -80,7 +80,7 @@ class AccessTokenRepository
     public function updateLastUsedAt(int $id): bool
     {
         $query = 'UPDATE zp_access_tokens SET last_used_at = NOW() WHERE id = :id';
-        $statement = $this->db->database->prepare($query);
+        $statement = $this->db->pdo()->prepare($query);
         $statement->bindValue(':id', $id, PDO::PARAM_INT);
 
         return $statement->execute();
@@ -97,7 +97,7 @@ class AccessTokenRepository
             $query .= ' AND name = :name';
         }
 
-        $statement = $this->db->database->prepare($query);
+        $statement = $this->db->pdo()->prepare($query);
         $statement->bindValue(':userId', $userId, PDO::PARAM_STR);
 
         if ($name !== null) {
@@ -122,7 +122,7 @@ class AccessTokenRepository
             $query .= ' AND name = :name';
         }
 
-        $statement = $this->db->database->prepare($query);
+        $statement = $this->db->pdo()->prepare($query);
         $statement->bindValue(':userId', $userId, PDO::PARAM_STR);
 
         if ($name !== null) {

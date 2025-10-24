@@ -43,7 +43,7 @@ class Comments
         }
         $sql .= ' ORDER BY comment.date '.$orderBy;
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':module', $module, PDO::PARAM_STR);
         $stmn->bindValue(':moduleId', $moduleId, PDO::PARAM_INT);
         if ($parent >= 0) {
@@ -81,7 +81,7 @@ class Comments
             $sql .= '1=1';
         }
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
 
         if ($module != null) {
             $stmn->bindValue(':module', $module, PDO::PARAM_STR);
@@ -116,7 +116,7 @@ class Comments
 				INNER JOIN zp_user as user ON comment.userId = user.id
 				WHERE commentParent = :id';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':id', $id, PDO::PARAM_INT);
 
         $stmn->execute();
@@ -136,7 +136,7 @@ class Comments
 				INNER JOIN zp_user as user ON comment.userId = user.id
 				WHERE comment.id=:id';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':id', $id, PDO::PARAM_INT);
 
         $stmn->execute();
@@ -150,7 +150,7 @@ class Comments
 			text, userId, date, moduleId, module, commentParent, status
 		) VALUES (:text, :userId, :date, :moduleId, :module, :commentParent, :status)';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
 
         $stmn->bindValue(':moduleId', $values['moduleId'], PDO::PARAM_INT);
         $stmn->bindValue(':userId', $values['userId'], PDO::PARAM_INT);
@@ -162,7 +162,7 @@ class Comments
 
         $result = $stmn->execute();
 
-        $insertId = $this->db->database->lastInsertId();
+        $insertId = $this->db->pdo()->lastInsertId();
 
         $stmn->closeCursor();
 
@@ -177,7 +177,7 @@ class Comments
     {
 
         $sql = 'DELETE FROM zp_comment WHERE id = :id';
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':id', $id, PDO::PARAM_INT);
 
         $result = $stmn->execute();
@@ -189,7 +189,7 @@ class Comments
     public function editComment($text, $id): bool
     {
         $sql = 'UPDATE zp_comment SET text = :text WHERE id = :id';
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':id', $id, PDO::PARAM_INT);
         $stmn->bindValue(':text', $text, PDO::PARAM_STR);
 
@@ -232,7 +232,7 @@ class Comments
 
         $sql .= ' GROUP BY comment.id';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
 
         $stmn->bindValue(':userId', session('userdata.id') ?? '-1', PDO::PARAM_INT);
         $stmn->bindValue(':clientId', session('userdata.clientId') ?? '-1', PDO::PARAM_INT);

@@ -25,7 +25,7 @@ class Audit
 
         $sql = 'INSERT INTO zp_audit (`userId`,`projectId`,`action`,`entity`,`entityId`,`values`,`date`) VALUES (:userId,:projectId,:action,:entity,:entityId,:values,:thedate)';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':userId', $userId, PDO::PARAM_INT);
         $stmn->bindValue(':projectId', $projectId, PDO::PARAM_INT);
         $stmn->bindValue(':action', $action);
@@ -50,7 +50,7 @@ class Audit
         }
         $sql .= ' ORDER BY `date` DESC LIMIT 1';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
 
         if ($action != '') {
             $stmn->bindValue(':action', $action);
@@ -72,7 +72,7 @@ class Audit
     {
         $sql = 'DELETE FROM zp_audit WHERE DATE(`date`) < CURDATE() - INTERVAL :age DAY';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':age', $ageDays, PDO::PARAM_INT);
 
         $stmn->execute();

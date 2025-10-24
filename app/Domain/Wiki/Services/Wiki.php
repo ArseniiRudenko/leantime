@@ -123,7 +123,7 @@ class Wiki
         return $this->wikiRepository->updateArticle($article);
     }
 
-    public function setCurrentWiki($id)
+    public function setCurrentWiki($id): bool
     {
 
         // Clear cache
@@ -166,11 +166,9 @@ class Wiki
         );
 
         if (is_array($wikiHeadlines) && count($wikiHeadlines) > 0) {
-            $currentArticle = $this->getArticle(
+            return $this->getArticle(
                 $wikiHeadlines[0]->id
             );
-
-            return $currentArticle;
         }
 
         return false;

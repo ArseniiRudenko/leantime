@@ -8,6 +8,7 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Leantime\Core\Configuration\Environment;
 use Leantime\Core\Db\Db as DbCore;
 use Leantime\Core\Events\DispatchesEvents as EventhelperCore;
+use Leantime\Core\Events\EventDispatcher;
 use Leantime\Core\Support\Avatarcreator;
 use Leantime\Domain\Auth\Models\Roles;
 use Leantime\Domain\Users\Repositories\Users as UserRepository;
@@ -36,8 +37,6 @@ class Projects
         protected DbCore $db,
         protected Avatarcreator $avatarcreator
     ) {
-        $this->config = $config;
-        $this->db = $db;
     }
 
     /**
@@ -83,7 +82,7 @@ class Projects
 					project.clientId
 				ORDER BY clientName, project.name';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         $stmn->execute();
         $values = $stmn->fetchAll();
@@ -93,12 +92,14 @@ class Projects
     }
 
     /**
-     * Gets all users that have access to a project.
-     * For direct access only set the teamOnly flag to true
+     * Gets users that have access to a project.
+     * Only direct assignees. Does not include admins or users that have access via a client.
+     * @param int $id - project id
+     * @param bool $includeApiUsers - if true includes api users in the result
+     * @return array - array of users with id, firstname, lastname, username, notifications, profileId, jobTitle, source, status, modified, role, projectRole
      */
     public function getUsersAssignedToProject($id, $includeApiUsers = false): array|bool
     {
-
         $query = 'SELECT
 					DISTINCT zp_user.id,
 					IF(zp_user.firstname IS NOT NULL, zp_user.firstname, zp_user.username) AS firstname,
@@ -127,7 +128,7 @@ class Projects
 				    GROUP BY zp_user.id
                     ORDER BY zp_user.lastname';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':projectId', $id, PDO::PARAM_INT);
 
         $stmn->execute();
@@ -137,23 +138,9 @@ class Projects
         return $values;
     }
 
-    /**
-     * Retrieves the relationship of users assigned to a specific project.
-     *
-     * @param  int  $id  The ID of the project.
-     * @param  bool  $includeApiUsers  Flag to determine whether to include API users. Default is false.
-     * @return array|bool Returns an array of users assigned to the project or false on failure.
-     *
-     * @Deprecated
-     */
-    public function getProjectUserRelation($id, $includeApiUsers = false): array|bool
-    {
-        return $this->getUsersAssignedToProject($id, $includeApiUsers);
-    }
 
     public function getUserProjects(int $userId, string $projectStatus = 'all', ?int $clientId = null, string $accessStatus = 'assigned', string $projectTypes = 'all'): false|array
     {
-
         $query = "SELECT
 					project.id,
 					project.name,
@@ -233,7 +220,7 @@ class Projects
 					project.id
 				    ORDER BY clientName, project.name';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         if ($userId == '') {
             $stmn->bindValue(':id', session('userdata.id'), PDO::PARAM_STR);
@@ -251,66 +238,14 @@ class Projects
             }
         }
 
-        if ($projectTypes == 'project') {
-            $query .= " AND (project.type = 'project' OR project.type IS NULL)";
-        }
-
         $stmn->execute();
         $values = $stmn->fetchAll(PDO::FETCH_ASSOC);
         $stmn->closeCursor();
 
-        return $values;
+        return self::dispatch_filter('afterLoadingProjects',  $values, ['userId' => $userId, 'projectStatus' => $projectStatus]);
     }
 
-    // This populates the projects show all tab and shows users all the projects that they could access
-    public function getProjectsUserHasAccessTo($userId, string $status = 'all', string $clientId = ''): false|array
-    {
 
-        $query = "SELECT
-					project.id,
-					project.name,
-					project.clientId,
-					project.state,
-					project.hourBudget,
-					project.dollarBudget,
-				    project.menuType,
-				    project.type,
-				    project.parent,
-				    project.modified,
-					client.name AS clientName,
-					client.id AS clientId,
-					IF(favorite.id IS NULL, false, true) as isFavorite
-				FROM zp_projects AS project
-				LEFT JOIN zp_relationuserproject as relation ON project.id = relation.projectId
-				LEFT JOIN zp_clients as client ON project.clientId = client.id
-				LEFT JOIN zp_reactions as favorite ON project.id = favorite.moduleId AND favorite.module = 'project' AND favorite.reaction = 'favorite' AND favorite.userId = :id
-				WHERE
-				    (   relation.userId = :id
-				        OR project.psettings = 'all'
-				        OR (project.psettings = 'clients' AND project.clientId = :clientId)
-				    )
-				  AND (project.active > '-1' OR project.active IS NULL)";
-
-        if ($status == 'open') {
-            $query .= " AND (project.state <> '-1' OR project.state IS NULL)";
-        } elseif ($status == 'closed') {
-            $query .= ' AND (project.state = -1)';
-        }
-
-        $query .= ' GROUP BY
-					project.id
-				ORDER BY clientName, project.name';
-
-        $stmn = $this->db->database->prepare($query);
-        $stmn->bindValue(':id', $userId, PDO::PARAM_STR);
-        $stmn->bindValue(':clientId', $clientId, PDO::PARAM_STR);
-
-        $stmn->execute();
-        $values = $stmn->fetchAll();
-        $stmn->closeCursor();
-
-        return $values;
-    }
 
     /**
      * @return int|mixed
@@ -328,7 +263,7 @@ class Projects
             $sql .= ' AND type = :type';
         }
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
 
         if ($clientId != null && is_numeric($clientId)) {
             $stmn->bindValue(':clientId', $clientId, PDO::PARAM_INT);
@@ -350,7 +285,6 @@ class Projects
     }
 
     // Get all open user projects /param: open, closed, all
-
     public function getClientProjects($clientId): false|array
     {
 
@@ -377,7 +311,7 @@ class Projects
 					project.clientId
 				ORDER BY clientName, project.name";
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':clientId', $clientId, PDO::PARAM_INT);
 
         $stmn->execute();
@@ -400,7 +334,7 @@ class Projects
 		LEFT JOIN zp_user ON zp_tickets.editorId = zp_user.id
 		WHERE projectId=:projectId ORDER BY zp_tickets.editFrom';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':projectId', $projectId, PDO::PARAM_INT);
 
         $stmn->execute();
@@ -450,7 +384,7 @@ class Projects
 					zp_projects.details
 				LIMIT 1";
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':projectId', $id, PDO::PARAM_INT);
         $stmn->bindValue(':id', session('userdata.id'), PDO::PARAM_STR);
 
@@ -469,7 +403,7 @@ class Projects
 				INNER JOIN zp_timesheets ON zp_timesheets.ticketId = zp_tickets.id
 				WHERE projectId = :id';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':id', $id, PDO::PARAM_INT);
 
         $stmn->execute();
@@ -503,7 +437,7 @@ class Projects
 				    WHERE projectId =  :id GROUP BY zp_timesheets.workDate
 				    ORDER BY workDate";
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':id', $id, PDO::PARAM_INT);
 
         $stmn->execute();
@@ -553,7 +487,7 @@ class Projects
 				INNER JOIN zp_timesheets ON zp_timesheets.ticketId = zp_tickets.id
 				WHERE projectId = :id';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':id', $id, PDO::PARAM_INT);
 
         $stmn->execute();
@@ -602,7 +536,7 @@ class Projects
                             :modified
                         )';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         $stmn->bindValue('name', $values['name'], PDO::PARAM_STR);
         $stmn->bindValue('details', $values['details'], PDO::PARAM_STR);
@@ -630,7 +564,7 @@ class Projects
         $stmn->bindValue('end', $endDate, PDO::PARAM_STR);
         $stuff = $stmn->execute();
 
-        $projectId = $this->db->database->lastInsertId();
+        $projectId = $this->db->pdo()->lastInsertId();
         $stmn->closeCursor();
 
         // Add author to project
@@ -676,7 +610,7 @@ class Projects
 
 				LIMIT 1';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
 
         $stmn->bindValue('name', $values['name'], PDO::PARAM_STR);
         $stmn->bindValue('details', $values['details'] ?? '', PDO::PARAM_STR);
@@ -739,7 +673,7 @@ class Projects
 
         $query = 'DELETE FROM zp_projects WHERE id = :id LIMIT 1';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':id', $id, PDO::PARAM_INT);
 
         $stmn->execute();
@@ -747,7 +681,7 @@ class Projects
 
         $query = 'DELETE FROM zp_tickets WHERE projectId = :id';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':id', $id, PDO::PARAM_INT);
 
         $stmn->execute();
@@ -764,7 +698,7 @@ class Projects
                       AND zp_tickets.type <> 'subtask' AND
                        zp_tickets.type <> 'milestone' LIMIT 1";
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':id', $id, PDO::PARAM_INT);
 
         $stmn->execute();
@@ -779,45 +713,42 @@ class Projects
     }
 
     /**
-     * getUserProjectRelation - get all projects related to a user
+     * getUserProjectRelation - get id-s of all projects directly assigned to a user.
+     * This does not include projects the user has access to via client or all-projects settings,
+     * or other means. Only directly assigned projects.
      *
-     * @param  null  $projectId
+     * @param int $id - user id
+     * @return array - array of project id-s
      */
-    public function getUserProjectRelation($id, $projectId = null): array
+    public function getUserProjectRelation($id): array
     {
-
         $query = 'SELECT
-				zp_relationuserproject.userId,
-				zp_relationuserproject.projectId,
-				zp_projects.name,
-				zp_projects.modified,
-				zp_relationuserproject.projectRole
+				zp_relationuserproject.projectId
 			FROM zp_relationuserproject JOIN zp_projects
 				ON zp_relationuserproject.projectId = zp_projects.id
 			WHERE userId = :id';
 
-        if ($projectId != null) {
-            $query .= ' AND  zp_projects.id = :projectId';
-        }
-
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':id', $id, PDO::PARAM_INT);
-
-        if ($projectId != null) {
-            $stmn->bindValue(':projectId', $projectId, PDO::PARAM_INT);
-        }
 
         $stmn->execute();
         $values = $stmn->fetchAll();
         $stmn->closeCursor();
 
-        return $values;
+        $projects = [];
+        if (count($values) > 0) {
+            foreach ($values as $value) {
+                $projects[] = $value['projectId'];
+            }
+        }
+        return $projects;
     }
 
     /**
-     * @throws BindingResolutionException
-     */
-    /**
+     * isUserAssignedToProject - check if user is assigned to project either directly or via client or all-projects settings
+     * @param int $userId - user id
+     * @param int $projectId - project id
+     * @return bool - true if user is assigned to project, false otherwise
      * @throws BindingResolutionException
      */
     public function isUserAssignedToProject($userId, $projectId): bool
@@ -863,7 +794,7 @@ class Projects
 				ON zp_relationuserproject.projectId = zp_projects.id
 			WHERE userId = :userId AND zp_relationuserproject.projectId = :projectId LIMIT 1';
 
-        $stmn = $this->db->database->prepare($query);
+        $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':userId', $userId, PDO::PARAM_INT);
         $stmn->bindValue(':projectId', $projectId, PDO::PARAM_INT);
 
@@ -871,71 +802,30 @@ class Projects
         $values = $stmn->fetch();
         $stmn->closeCursor();
 
+        $isAssigned = false;
+
         if ($values && count($values) > 1) {
-            return true;
+           $isAssigned = true;
         }
 
-        return false;
+        $isAssigned = EventDispatcher::dispatch_filter('isUserAssignedToProject', $isAssigned, ['userId' => $userId, 'projectId' => $projectId]);
+
+        return $isAssigned;
     }
 
     /**
+     * editUserProjectRelations - edit the projects assigned to a user
+     * @param int $id - user id
+     * @param array $projects - array of project id-s
+     * @return bool - true if success, false if failure
      * @throws BindingResolutionException
      */
-    /**
-     * @throws BindingResolutionException
-     */
-    public function isUserMemberOfProject($userId, $projectId): bool
-    {
-
-        $userRepo = app()->make(UserRepository::class);
-        $user = $userRepo->getUser($userId);
-
-        if ($user === false) {
-            return false;
-        }
-
-        // admins owners and managers can access everything
-
-        $project = $this->getProject($projectId);
-
-        if ($project === false) {
-            return false;
-        }
-
-        // Select users are allowed to see project
-        $query = 'SELECT
-				zp_relationuserproject.userId,
-				zp_relationuserproject.projectId,
-				zp_projects.name,
-                zp_projects.modified
-			FROM zp_relationuserproject JOIN zp_projects
-				ON zp_relationuserproject.projectId = zp_projects.id
-			WHERE userId = :userId AND zp_relationuserproject.projectId = :projectId LIMIT 1';
-
-        $stmn = $this->db->database->prepare($query);
-        $stmn->bindValue(':userId', $userId, PDO::PARAM_INT);
-        $stmn->bindValue(':projectId', $projectId, PDO::PARAM_INT);
-
-        $stmn->execute();
-        $values = $stmn->fetch();
-        $stmn->closeCursor();
-
-        if ($values && count($values) > 1) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * getUserProjectRelation - get all projects related to a user
-     */
-    public function editUserProjectRelations($id, $projects): bool
+    public function editUserProjectRelations(int $id, array $projects): bool
     {
 
         $sql = 'SELECT id,userId,projectId,projectRole FROM zp_relationuserproject WHERE userId=:id';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
 
         $stmn->bindValue(':id', $id, PDO::PARAM_INT);
 
@@ -972,10 +862,9 @@ class Projects
 
     public function deleteProjectRelation($userId, $projectId): void
     {
-
         $sql = 'DELETE FROM zp_relationuserproject WHERE projectId=:projectId AND userId=:userId';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
 
         $stmn->bindValue(':userId', $userId, PDO::PARAM_INT);
         $stmn->bindValue(':projectId', $projectId, PDO::PARAM_INT);
@@ -987,10 +876,9 @@ class Projects
 
     public function deleteAllProjectRelations($userId): void
     {
-
         $sql = 'DELETE FROM zp_relationuserproject WHERE userId=:userId';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
 
         $stmn->bindValue(':userId', $userId, PDO::PARAM_INT);
 
@@ -1001,10 +889,9 @@ class Projects
 
     public function deleteAllUserRelations($projectId): void
     {
-
         $sql = 'DELETE FROM zp_relationuserproject WHERE projectId=:projectId';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
 
         $stmn->bindValue(':projectId', $projectId, PDO::PARAM_INT);
 
@@ -1027,7 +914,7 @@ class Projects
 					:projectRole
 				)';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
 
         $stmn->bindValue(':userId', $userId, PDO::PARAM_INT);
         $stmn->bindValue(':projectId', $projectId, PDO::PARAM_INT);
@@ -1055,7 +942,7 @@ class Projects
 
         $sql .= ' WHERE id=:id LIMIT 1';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':id', $id, PDO::PARAM_STR);
         $stmn->bindValue(':modified', date('Y-m-d H:i:s'), PDO::PARAM_STR);
 
@@ -1084,7 +971,7 @@ class Projects
                         modified = :modified
                     WHERE id = :userId';
 
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->bindValue(':fileId', $fileId, PDO::PARAM_INT);
         $stmn->bindValue(':userId', $id, PDO::PARAM_INT);
         $stmn->bindValue(':modified', date('Y-m-d H:i:s'), PDO::PARAM_STR);
@@ -1114,7 +1001,7 @@ class Projects
         if ($id !== false) {
             $sql = 'SELECT avatar, name FROM `zp_projects` WHERE id = :id LIMIT 1';
 
-            $stmn = $this->db->database->prepare($sql);
+            $stmn = $this->db->pdo()->prepare($sql);
             $stmn->bindValue(':id', $id, PDO::PARAM_INT);
 
             $stmn->execute();
@@ -1122,18 +1009,39 @@ class Projects
             $stmn->closeCursor();
 
         }
-
         return $value;
-
     }
 
     public function getProjectNames(): array
     {
         $sql = 'SELECT id, name FROM `zp_projects` ORDER BY id ASC';
-        $stmn = $this->db->database->prepare($sql);
+        $stmn = $this->db->pdo()->prepare($sql);
         $stmn->execute();
         $values = $stmn->fetchAll(PDO::FETCH_ASSOC);
         $stmn->closeCursor();
         return $values;
+    }
+
+    /**
+     * @param mixed $userId - user id
+     * @param mixed $projectId - project id
+     * @return string  - role in the project, or empty string if not found
+     */
+    public function getUserProjectRole(mixed $userId, mixed $projectId):string
+    {
+        $sql = 'SELECT projectRole FROM `zp_relationuserproject` WHERE userId = :userId AND projectId = :projectId LIMIT 1';
+        $stmn = $this->db->pdo()->prepare($sql);
+        $stmn->bindValue(':userId', $userId, PDO::PARAM_INT);
+        $stmn->bindValue(':projectId', $projectId, PDO::PARAM_INT);
+        $stmn->execute();
+        $value = $stmn->fetch();
+        $stmn->closeCursor();
+
+        if ($value && isset($value['projectRole'])) {
+            return $value['projectRole'];
+        } else {
+            return '';
+        }
+
     }
 }

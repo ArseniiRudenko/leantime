@@ -138,8 +138,16 @@ class Projects
         return $values;
     }
 
-
-    public function getUserProjects(int $userId, string $projectStatus = 'all', ?int $clientId = null, string $accessStatus = 'assigned', string $projectTypes = 'all'): false|array
+    /**
+     * Gets users that have access to a project.
+     * Includes admins and users that have access via a client.
+     * @param  int $userId - user id
+     * @param  string $projectStatus - open, closed, all
+     * @param  int $clientId - client id, if specified, filters only projects that are assigned to the client
+     * @param  string $accessStatus - assigned, clients, all
+     * @return array - array of users with id, firstname, lastname, username, notifications, profileId, jobTitle, source, status, modified, role, projectRole
+     */
+    public function getUserProjects(int $userId, string $projectStatus = 'all', ?int $clientId = null, string $accessStatus = 'assigned'): false|array
     {
         $query = "SELECT
 					project.id,
@@ -207,15 +215,6 @@ class Projects
             $query .= ' AND project.clientId = :clientId';
         }
 
-        if ($projectTypes != 'all' && $projectTypes != 'project') {
-            $projectTypeIn = DbCore::arrayToPdoBindingString('projectType', count(explode(',', $projectTypes)));
-            $query .= ' AND project.type IN('.$projectTypeIn.')';
-        }
-
-        if ($projectTypes == 'project') {
-            $query .= " AND (project.type = 'project' OR project.type IS NULL)";
-        }
-
         $query .= ' GROUP BY
 					project.id
 				    ORDER BY clientName, project.name';
@@ -232,17 +231,11 @@ class Projects
             $stmn->bindValue(':clientId', $clientId, PDO::PARAM_STR);
         }
 
-        if ($projectTypes != 'all' && $projectTypes != 'project') {
-            foreach (explode(',', $projectTypes) as $key => $type) {
-                $stmn->bindValue(':projectType'.$key, $type, PDO::PARAM_STR);
-            }
-        }
-
         $stmn->execute();
         $values = $stmn->fetchAll(PDO::FETCH_ASSOC);
         $stmn->closeCursor();
 
-        return self::dispatch_filter('afterLoadingProjects',  $values, ['userId' => $userId, 'projectStatus' => $projectStatus]);
+        return self::dispatch_filter('afterLoadingProjects',  $values, ['userId' => $userId, 'projectStatus' => $projectStatus, 'accessStatus' => $accessStatus, 'clientId' => $clientId]);;
     }
 
 
@@ -720,7 +713,7 @@ class Projects
      * @param int $id - user id
      * @return array - array of project id-s
      */
-    public function getUserProjectRelation($id): array
+    public function getUserProjectRelation(int $id): array
     {
         $query = 'SELECT
 				zp_relationuserproject.projectId
@@ -751,7 +744,7 @@ class Projects
      * @return bool - true if user is assigned to project, false otherwise
      * @throws BindingResolutionException
      */
-    public function isUserAssignedToProject($userId, $projectId): bool
+    public function isUserAssignedToProject(int $userId, int $projectId): bool
     {
 
         $userRepo = app()->make(UserRepository::class);
@@ -808,9 +801,7 @@ class Projects
            $isAssigned = true;
         }
 
-        $isAssigned = EventDispatcher::dispatch_filter('isUserAssignedToProject', $isAssigned, ['userId' => $userId, 'projectId' => $projectId]);
-
-        return $isAssigned;
+        return EventDispatcher::dispatch_filter('isUserAssignedToProject', $isAssigned, ['userId' => $userId, 'projectId' => $projectId]);
     }
 
     /**
@@ -1036,12 +1027,11 @@ class Projects
         $stmn->execute();
         $value = $stmn->fetch();
         $stmn->closeCursor();
-
+        $role = '';
         if ($value && isset($value['projectRole'])) {
-            return $value['projectRole'];
-        } else {
-            return '';
+            $role = $value['projectRole'];
         }
+        return EventDispatcher::dispatch_filter('userProjectRole', $role, ['userId' => $userId, 'projectId' => $projectId]);
 
     }
 }

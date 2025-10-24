@@ -88,12 +88,12 @@ class Projects
      * Calculates the completion percentage, estimated completion date,
      * and planned completion date of the project.
      *
-     * @param  int  $projectId  The ID of the project.
+     * @param int $projectId  The ID of the project.
      * @return array The progress of the project.
      *
      * @api
      */
-    public function getProjectProgress($projectId): array
+    public function getProjectProgress(int $projectId): array
     {
         $returnValue = ['percent' => 0, 'estimatedCompletionDate' => 'We need more data to determine that.', 'plannedCompletionDate' => ''];
 
@@ -172,12 +172,12 @@ class Projects
     /**
      * Gets an array of user IDs to notify for a given project.
      *
-     * @param  int  $projectId  The ID of the project to get users to notify for.
+     * @param int $projectId  The ID of the project to get users to notify for.
      * @return array An array of user IDs.
      *
      * @api
      */
-    public function getUsersToNotify($projectId): array
+    public function getUsersToNotify(int $projectId): array
     {
 
         $users = $this->projectRepository->getUsersAssignedToProject($projectId);
@@ -197,12 +197,12 @@ class Projects
     /**
      * Gets all the users who need to be notified for a given project.
      *
-     * @param  int  $projectId  The ID of the project.
+     * @param int $projectId  The ID of the project.
      * @return array An array of users to notify.
      *
      * @api
      */
-    public function getAllUserInfoToNotify($projectId): array
+    public function getAllUserInfoToNotify(int $projectId): array
     {
 
         $users = $this->projectRepository->getUsersAssignedToProject($projectId);
@@ -266,7 +266,7 @@ class Projects
         $contentToCheck = '';
         // Find entity ID & content
         // Todo once all entities are models this if statement can be reduced
-        if (isset($notification->entity) && is_array($notification->entity) && isset($notification->entity['id'])) {
+        if (isset($notification->entity['id']) && is_array($notification->entity)) {
             $entityId = $notification->entity['id'];
 
             if (isset($mentionFields[$notification->module])) {
@@ -278,7 +278,7 @@ class Projects
                     }
                 }
             }
-        } elseif (isset($notification->entity) && is_object($notification->entity) && isset($notification->entity->id)) {
+        } elseif (isset($notification->entity->id) && is_object($notification->entity)) {
             $entityId = $notification->entity->id;
 
             if (isset($mentionFields[$notification->module])) {
@@ -329,12 +329,12 @@ class Projects
     /**
      * Retrieves the name of a project based on its ID.
      *
-     * @param  int  $projectId  The ID of the project.
+     * @param int $projectId  The ID of the project.
      * @return string|null The name of the project, or null if the project does not exist.
      *
      * @api
      */
-    public function getProjectName($projectId)
+    public function getProjectName(int $projectId)
     {
 
         $project = $this->projectRepository->getProject($projectId);
@@ -346,16 +346,16 @@ class Projects
     /**
      * Gets projects assigned to a user.
      *
-     * @param  int  $userId  The ID of the user.
+     * @param int $userId  The ID of the user.
      * @param  string  $projectStatus  The status of the projects. Defaults to "open".
-     * @param  int|null  $clientId  The ID of the client. Defaults to null.
+     * @param int|null $clientId  The ID of the client. Defaults to null.
      * @return array The projects assigned to the user.
      *
      * @api
      */
-    public function getProjectsAssignedToUser($userId, string $projectStatus = 'open', $clientId = null, string $projectTypes = 'all'): array
+    public function getProjectsAssignedToUser(int $userId, string $projectStatus = 'open', int $clientId = null): array
     {
-        $projects = $this->projectRepository->getUserProjects(userId: $userId, projectStatus: $projectStatus, clientId: $clientId, projectTypes: $projectTypes);
+        $projects = $this->projectRepository->getUserProjects(userId: $userId, projectStatus: $projectStatus, clientId: $clientId);
 
         if ($projects) {
             return $projects;
@@ -425,14 +425,14 @@ class Projects
     /**
      * Gets the hierarchy of projects assigned to a user.
      *
-     * @param  int  $userId  The ID of the user.
+     * @param int $userId  The ID of the user.
      * @param  string  $projectStatus  The project status. Default is "open".
-     * @param  int|null  $clientId  The ID of the client. Default is null.
+     * @param int|null $clientId  The ID of the client. Default is null.
      * @return array An array containing the assigned projects, the project hierarchy, and the favorite projects.
      *
      * @api
      */
-    public function getProjectHierarchyAssignedToUser($userId, string $projectStatus = 'open', $clientId = null): array
+    public function getProjectHierarchyAssignedToUser(int $userId, string $projectStatus = 'open', int $clientId = null): array
     {
 
         // Load all projects user is assigned to
@@ -504,13 +504,13 @@ class Projects
     /**
      * Gets all the clients available to a user.
      *
-     * @param  int  $userId  The ID of the user.
+     * @param int $userId  The ID of the user.
      * @param  string  $projectStatus  The status of the projects to be considered. Defaults to "open".
      * @return array An array of clients available to the user.
      *
      * @api
      */
-    public function getAllClientsAvailableToUser($userId, string $projectStatus = 'open'): array
+    public function getAllClientsAvailableToUser(int $userId, string $projectStatus = 'open'): array
     {
 
         // Load all projects user is assigned to
@@ -545,13 +545,13 @@ class Projects
     /**
      * Gets the role of a user in a specific project.
      *
-     * @param  int  $userId  The user ID.
-     * @param  int  $projectId  The project ID.
+     * @param int $userId  The user ID.
+     * @param int $projectId  The project ID.
      * @return string The role of the user in the project (string) or an empty string if the user is not assigned to the project or if the project role is not defined.
      *
      * @api
      */
-    public function getProjectRole($userId, $projectId): string
+    public function getProjectRole(int $userId, int $projectId): string
     {
         return $this->projectRepository->getUserProjectRole($userId, $projectId);
     }
@@ -559,20 +559,14 @@ class Projects
     /**
      * Gets the projects that a user has access to.
      *
-     * @param  int  $userId  The ID of the user.
-     * @return array|false The array of projects if the user has access, false otherwise.
+     * @param int $userId  The ID of the user.
+     * @return array The array of projects if the user has access, otherwise an empty array.
      *
      * @api
      */
-    public function getProjectsUserHasAccessTo($userId): false|array
+    public function getProjectsUserHasAccessTo(int $userId): array
     {
-        $projects = $this->projectRepository->getUserProjects(userId: $userId, accessStatus: 'all');
-
-        if ($projects) {
-            return $projects;
-        } else {
-            return false;
-        }
+        return $this->projectRepository->getUserProjects(userId: $userId, accessStatus: 'all');
     }
 
     /**
@@ -1194,7 +1188,7 @@ class Projects
      * Retrieves the avatar for a project.
      *
      * @param  mixed  $id  The ID of the project.
-     * @return SVG|Response|string Returns either an SVG file, a file response or a path to a file
+     * @return SVG|Response|string Returns either an SVG file, a file response, or a path to a file
      *
      * @api
      */
@@ -1639,8 +1633,7 @@ class Projects
     public function getAll(bool $showClosedProjects = false): array
     {
         return $this->projectRepository->getUserProjects(userId: session('userdata.id'),
-            accessStatus: 'all',
-            projectTypes: 'project');
+            accessStatus: 'all');
     }
 
     /**
@@ -1655,8 +1648,7 @@ class Projects
     {
         $projects = $this->projectRepository->getUserProjects(
             userId: session('userdata.id'),
-            accessStatus: 'all',
-            projectTypes: 'project');
+            accessStatus: 'all');
 
         $filteredProjects = [];
         foreach ($projects as $key => $project) {

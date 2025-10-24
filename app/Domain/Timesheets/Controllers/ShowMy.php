@@ -87,8 +87,7 @@ class ShowMy extends Controller
         $this->tpl->assign('actKind', $kind);
         $this->tpl->assign('kind', $this->timesheetRepo->kind);
         $this->tpl->assign('allProjects', $this->projects->getUserProjects(
-            userId: session('userdata.id'),
-            projectTypes: 'project'
+            userId: session('userdata.id')
         ));
         $this->tpl->assign('allTickets', $this->tickets->getUsersTickets(
             id: session('userdata.id'),

@@ -42,11 +42,11 @@ $size = floor(100 / $numberofColumns);
                 <?php
                 $tpl->dispatchTplEvent('filters.afterLefthandSectionOpen');
 
-$tpl->displaySubmodule('tickets-ticketNewBtn');
-$tpl->displaySubmodule('tickets-ticketFilter');
+                $tpl->displaySubmodule('tickets-ticketNewBtn');
+                $tpl->displaySubmodule('tickets-ticketFilter');
 
-$tpl->dispatchTplEvent('filters.beforeLefthandSectionClose');
-?>
+                $tpl->dispatchTplEvent('filters.beforeLefthandSectionClose');
+                ?>
             </div>
 
             <div class="col-md-4 center">
@@ -124,6 +124,7 @@ $tpl->dispatchTplEvent('filters.beforeLefthandSectionClose');
                         <th class="planned-hours-col"><?= $tpl->__('label.planned_hours'); ?></th>
                         <th class="remaining-hours-col"><?= $tpl->__('label.estimated_hours_remaining'); ?></th>
                         <th class="booked-hours-col"><?= $tpl->__('label.booked_hours'); ?></th>
+                        <?php $tpl->dispatchTplEvent('allTicketsTable.addHeader'); ?>
                         <th class="no-sort"></th>
                     </tr>
                     <?php $tpl->dispatchTplEvent('allTicketsTable.afterHeadRow', ['tickets' => $allTickets]); ?>
@@ -359,15 +360,13 @@ $tpl->dispatchTplEvent('filters.beforeLefthandSectionClose');
                                     echo $row['bookedHours'];
                                 }?>
                             </td>
+                            <?php $tpl->dispatchTplEvent('allTicketsTable.beforeRowEnd', ['ticket'=>$row,'rowNum' => $rowNum]); ?>
                             <td>
                                 <?php echo app('blade.compiler')::render('@include("tickets::partials.ticketsubmenu", [
                                                                                         "ticket" => $ticket,
                                                                                         "onTheClock" => $onTheClock
                                                                                     ])', ['ticket' => $row, 'onTheClock' => $tpl->get('onTheClock')]); ?>
-
-
                             </td>
-                            <?php $tpl->dispatchTplEvent('allTicketsTable.beforeRowEnd', ['tickets' => $allTickets, 'rowNum' => $rowNum]); ?>
                         </tr>
                     <?php } ?>
                     <?php $tpl->dispatchTplEvent('allTicketsTable.afterLastRow', ['tickets' => $allTickets]); ?>

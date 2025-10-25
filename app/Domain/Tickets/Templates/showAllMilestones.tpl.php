@@ -82,7 +82,7 @@ $tpl->dispatchTplEvent('filters.beforeLefthandSectionClose');
 
             <?php $allTickets = $group['items']; ?>
 
-            <?php $tpl->dispatchTplEvent('allTicketsTable.before', ['tickets' => $allTickets]); ?>
+            <?php $tpl->dispatchTplEvent('allMilestonesTable.before', ['tickets' => $allTickets]); ?>
             <table class="table table-bordered display ticketTable " style="width:100%">
                 <colgroup>
                     <col class="con1" >
@@ -98,9 +98,9 @@ $tpl->dispatchTplEvent('filters.beforeLefthandSectionClose');
                     <col class="con1" >
 
                 </colgroup>
-                <?php $tpl->dispatchTplEvent('allTicketsTable.beforeHead', ['tickets' => $allTickets]); ?>
+                <?php $tpl->dispatchTplEvent('allMilestonesTable.beforeHead', ['tickets' => $allTickets]); ?>
                 <thead>
-                <?php $tpl->dispatchTplEvent('allTicketsTable.beforeHeadRow', ['tickets' => $allTickets]); ?>
+                <?php $tpl->dispatchTplEvent('allMilestonesTable.beforeHeadRow', ['tickets' => $allTickets]); ?>
                 <tr>
                     <th><?= $tpl->__('label.title'); ?></th>
                     <th><?= $tpl->__('label.todo_type'); ?></th>
@@ -119,14 +119,14 @@ $tpl->dispatchTplEvent('filters.beforeLefthandSectionClose');
                     <th class="no-sort"></th>
 
                 </tr>
-                <?php $tpl->dispatchTplEvent('allTicketsTable.afterHeadRow', ['tickets' => $allTickets]); ?>
+                <?php $tpl->dispatchTplEvent('allMilestonesTable.afterHeadRow', ['tickets' => $allTickets]); ?>
                 </thead>
-                <?php $tpl->dispatchTplEvent('allTicketsTable.afterHead', ['tickets' => $allTickets]); ?>
+                <?php $tpl->dispatchTplEvent('allMilestonesTable.afterHead', ['tickets' => $allTickets]); ?>
                 <tbody>
-                    <?php $tpl->dispatchTplEvent('allTicketsTable.beforeFirstRow', ['tickets' => $allTickets]); ?>
+                    <?php $tpl->dispatchTplEvent('allMilestonesTable.beforeFirstRow', ['tickets' => $allTickets]); ?>
                     <?php foreach ($allTickets as $rowNum => $row) {?>
                         <tr>
-                            <?php $tpl->dispatchTplEvent('allTicketsTable.afterRowStart', ['rowNum' => $rowNum, 'tickets' => $allTickets]); ?>
+                            <?php $tpl->dispatchTplEvent('allMilestonesTable.afterRowStart', ['rowNum' => $rowNum, 'tickets' => $allTickets]); ?>
                             <td data-order="<?= $tpl->e($row['headline']); ?>">
                                 <?php if ($row['type'] == 'milestone') { ?>
                                     <a href="#/tickets/editMilestone/<?= $tpl->e($row['id']); ?>"><?= $tpl->e($row['headline']); ?></a>
@@ -271,14 +271,14 @@ $tpl->dispatchTplEvent('filters.beforeLefthandSectionClose');
 
 
                             </td>
-                            <?php $tpl->dispatchTplEvent('allTicketsTable.beforeRowEnd', ['tickets' => $allTickets, 'rowNum' => $rowNum]); ?>
+                            <?php $tpl->dispatchTplEvent('allMilestonesTable.beforeRowEnd', ['tickets' => $allTickets, 'rowNum' => $rowNum]); ?>
                         </tr>
                     <?php } ?>
-                    <?php $tpl->dispatchTplEvent('allTicketsTable.afterLastRow', ['tickets' => $allTickets]); ?>
+                    <?php $tpl->dispatchTplEvent('allMilestonesTable.afterLastRow', ['tickets' => $allTickets]); ?>
                 </tbody>
-                <?php $tpl->dispatchTplEvent('allTicketsTable.afterBody', ['tickets' => $allTickets]); ?>
+                <?php $tpl->dispatchTplEvent('allMilestonesTable.afterBody', ['tickets' => $allTickets]); ?>
             </table>
-            <?php $tpl->dispatchTplEvent('allTicketsTable.afterClose', ['tickets' => $allTickets]); ?>
+            <?php $tpl->dispatchTplEvent('allMilestonesTable.afterClose', ['tickets' => $allTickets]); ?>
 
             <?php if ($group['label'] != 'all') { ?>
                 </div>

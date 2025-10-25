@@ -73,9 +73,9 @@ $tpl->dispatchTplEvent('filters.beforeCenterSectionClose');
 
         </form>
 
-        <?php $tpl->dispatchTplEvent('allTicketsTable.before', ['tickets' => $allTickets]); ?>
+        <?php $tpl->dispatchTplEvent('allMilestonesTable.before', ['tickets' => $allTickets]); ?>
 
-            <table id="allTicketsTable" class="table table-bordered display" style="width:100%">
+            <table id="allMilestonesTable" class="table table-bordered display" style="width:100%">
                 <colgroup>
                     <col class="con1" >
                     <col class="con0">
@@ -92,9 +92,9 @@ $tpl->dispatchTplEvent('filters.beforeCenterSectionClose');
 
 
                 </colgroup>
-                <?php $tpl->dispatchTplEvent('allTicketsTable.beforeHead', ['tickets' => $allTickets]); ?>
+                <?php $tpl->dispatchTplEvent('allMilestonesTable.beforeHead', ['tickets' => $allTickets]); ?>
                 <thead>
-                <?php $tpl->dispatchTplEvent('allTicketsTable.beforeHeadRow', ['tickets' => $allTickets]); ?>
+                <?php $tpl->dispatchTplEvent('allMilestonesTable.beforeHeadRow', ['tickets' => $allTickets]); ?>
                 <tr>
                     <th><?= $tpl->__('label.project_name'); ?></th>
                     <th><?= $tpl->__('label.title'); ?></th>
@@ -113,15 +113,15 @@ $tpl->dispatchTplEvent('filters.beforeCenterSectionClose');
                     <th class="no-sort"></th>
 
                 </tr>
-                <?php $tpl->dispatchTplEvent('allTicketsTable.afterHeadRow', ['tickets' => $allTickets]); ?>
+                <?php $tpl->dispatchTplEvent('allMilestonesTable.afterHeadRow', ['tickets' => $allTickets]); ?>
                 </thead>
-                <?php $tpl->dispatchTplEvent('allTicketsTable.afterHead', ['tickets' => $allTickets]); ?>
+                <?php $tpl->dispatchTplEvent('allMilestonesTable.afterHead', ['tickets' => $allTickets]); ?>
                 <tbody>
-                    <?php $tpl->dispatchTplEvent('allTicketsTable.beforeFirstRow', ['tickets' => $allTickets]); ?>
+                    <?php $tpl->dispatchTplEvent('allMilestonesTable.beforeFirstRow', ['tickets' => $allTickets]); ?>
                     <?php foreach ($allTickets as $rowNum => $row) {?>
                         <tr>
                             <td><h4><?= $row->projectName; ?> </h4></td>
-                            <?php $tpl->dispatchTplEvent('allTicketsTable.afterRowStart', ['rowNum' => $rowNum, 'tickets' => $allTickets]); ?>
+                            <?php $tpl->dispatchTplEvent('allMilestonesTable.afterRowStart', ['rowNum' => $rowNum, 'tickets' => $allTickets]); ?>
                             <td data-order="<?= $tpl->e($row->headline); ?>"><a href="#/tickets/editMilestone/<?= $tpl->e($row->id); ?>"><?= $tpl->e($row->headline); ?></a></td>
                             <?php
             if ($row->milestoneid != '' && $row->milestoneid != 0) {
@@ -253,14 +253,14 @@ $tpl->dispatchTplEvent('filters.beforeCenterSectionClose');
 
 
                             </td>
-                            <?php $tpl->dispatchTplEvent('allTicketsTable.beforeRowEnd', ['tickets' => $allTickets, 'rowNum' => $rowNum]); ?>
+                            <?php $tpl->dispatchTplEvent('allMilestonesTable.beforeRowEnd', ['tickets' => $allTickets, 'rowNum' => $rowNum]); ?>
                         </tr>
                     <?php } ?>
-                    <?php $tpl->dispatchTplEvent('allTicketsTable.afterLastRow', ['tickets' => $allTickets]); ?>
+                    <?php $tpl->dispatchTplEvent('allMilestonesTable.afterLastRow', ['tickets' => $allTickets]); ?>
                 </tbody>
-                <?php $tpl->dispatchTplEvent('allTicketsTable.afterBody', ['tickets' => $allTickets]); ?>
+                <?php $tpl->dispatchTplEvent('allMilestonesTable.afterBody', ['tickets' => $allTickets]); ?>
             </table>
-            <?php $tpl->dispatchTplEvent('allTicketsTable.afterClose', ['tickets' => $allTickets]); ?>
+            <?php $tpl->dispatchTplEvent('allMilestonesTable.afterClose', ['tickets' => $allTickets]); ?>
 
     </div>
 </div>

@@ -285,6 +285,8 @@ $tpl->dispatchTplEvent('filters.beforeLefthandSectionClose');
                                                     </ul>
                                                 </div>
 
+                                                <?php $tpl->dispatchTplEvent('afterTicketPills', $row); ?>
+
                                             </div>
                                             <div class="clearfix"></div>
 

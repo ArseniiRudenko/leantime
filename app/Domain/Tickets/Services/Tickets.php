@@ -670,7 +670,7 @@ class Tickets
 
                             break;
                         case 'editorId':
-                            $label = "<div class='profileImage'><img src='".BASE_URL.'/api/users?profileImage='.$ticket['editorId']."' /></div> ".$ticket['editorFirstname'].' '.$ticket['editorLastname'];
+                            $label = "<div class='profileImage'><img src='".BASE_URL.'/api/users?profileImage='.$ticket['editorId']."' alt='User profile image' /></div> ".$ticket['editorFirstname'].' '.$ticket['editorLastname'];
 
                             if ($ticket['editorFirstname'] == '' && $ticket['editorLastname'] == '') {
                                 $label = 'Not Assigned to Anyone';
@@ -1725,31 +1725,14 @@ class Tickets
             $values['headline'] = $currentTicket->headline;
         }
 
-        $values = [
-            'id' => $values['id'],
-            'headline' => $values['headline'] ?? '',
-            'type' => $values['type'] ?? '',
-            'description' => $values['description'] ?? '',
-            'projectId' => $values['projectId'] ?? session('currentProject'),
-            'editorId' => $values['editorId'] ?? '',
-            'date' => dtHelper()->userNow()->formatDateTimeForDb(),
-            'dateToFinish' => $values['dateToFinish'] ?? '',
-            'timeToFinish' => $values['timeToFinish'] ?? '',
-            'status' => $values['status'] ?? '',
-            'planHours' => $values['planHours'] ?? '',
-            'tags' => $values['tags'] ?? '',
-            'sprint' => $values['sprint'] ?? '',
-            'storypoints' => $values['storypoints'] ?? '',
-            'hourRemaining' => $values['hourRemaining'] ?? '',
-            'priority' => $values['priority'] ?? '',
-            'acceptanceCriteria' => $values['acceptanceCriteria'] ?? '',
-            'editFrom' => $values['editFrom'] ?? '',
-            'timeFrom' => $values['timeFrom'] ?? '',
-            'editTo' => $values['editTo'] ?? '',
-            'timeTo' => $values['timeTo'] ?? '',
-            'dependingTicketId' => $values['dependingTicketId'] ?? '',
-            'milestoneid' => $values['milestoneid'] ?? '',
-        ];
+        foreach ($values as $key => $value) {
+            //convert null to empty string
+            if ($value === null) {
+                $values[$key] = '';
+            }
+            $values['date'] = gmdate('Y-m-d H:i:s');
+            $values['projectId'] = $values['projectId'] ?? session('currentProject');
+        }
 
         if ($values['projectId'] === null || $values['projectId'] === '' || $values['projectId'] === false) {
             return ['msg' => 'project id is not set', 'type' => 'error'];
@@ -2001,11 +1984,11 @@ class Tickets
     }
 
     /**
-     * @return false|void
+     * @return bool
      *
      * @api
      */
-    public function updateTicketSorting($params)
+    public function updateTicketSorting($params):bool
     {
 
         // ticketId: sortIndex

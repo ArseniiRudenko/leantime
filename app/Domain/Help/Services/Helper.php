@@ -281,8 +281,8 @@ class Helper
             'projectId' => $projectId,
             'editorId' => $userId,
             'userId' => $userId,
-            'date' => dtHelper()->userNow()->formatDateTimeForDb(),
-            'editFrom' => dtHelper()->userNow()->formatDateTimeForDb(),
+            'date' => gmdate('Y-m-d h:i:s'),
+            'editFrom' => gmdate('Y-m-d h:i:s'),
             'editTo' => dtHelper()->userNow()->addDays(14)->formatDateTimeForDb(),
             'tags' => '#124F7D',
         ];
@@ -290,12 +290,9 @@ class Helper
 
         // Create Tasks
         $values = [
-            'headline' => '',
-            'description' => '',
             'projectId' => $projectId,
             'editorId' => $userId,
             'userId' => $userId,
-            'dateToFinish' => dtHelper()->userNow()->addDays(3)->formatDateTimeForDb(),
             'milestone' => $milestoneId,
         ];
 

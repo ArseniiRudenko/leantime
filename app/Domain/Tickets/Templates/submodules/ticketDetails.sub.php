@@ -113,10 +113,11 @@ $ticketTypes = $tpl->get('ticketTypes');
                                name="timeToFinish"/>
                     </div>
                     <div style="padding-top:6px;">
-                        <?php $tpl->dispatchTplEvent('afterDates', ['ticket' => $ticket]);
-?>
+                        <?php $tpl->dispatchTplEvent('afterDates', ['ticket' => $ticket]); ?>
                     </div>
                 </div>
+
+                <?php $tpl->dispatchTplEvent('afterDatesSection', ['ticket' => $ticket]); ?>
 
                 <div class="form-group tw-flex tw-w-3/5">
                     <label class="control-label tw-mx-m tw-w-[100px]"><?php echo $tpl->__('label.tags'); ?></label>

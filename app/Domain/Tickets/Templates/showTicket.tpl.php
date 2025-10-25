@@ -73,16 +73,10 @@ $projectData = $tpl->get('projectData');
             <?php
             $tpl->assign('formUrl', BASE_URL.'/tickets/showTicket/'.$ticket->id.'');
 
-$tpl->displaySubmodule('comments-generalComment');
-?>
+            $tpl->displaySubmodule('comments-generalComment');
+            ?>
         </form>
     </div>
-
-
-
-
-
-
 
 </div>
 

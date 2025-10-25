@@ -5,6 +5,7 @@ namespace Leantime\Domain\Tickets\Repositories;
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
 use Leantime\Core\Db\Db as DbCore;
 use Leantime\Core\Events\DispatchesEvents as EventhelperCore;
 use Leantime\Core\Language as LanguageCore;
@@ -1576,7 +1577,7 @@ class Tickets
         $stmn->bindValue(':editTo', $values['editTo'], PDO::PARAM_STR);
         $stmn->bindValue(':sortIndex', $values['sortIndex'] ?? '', PDO::PARAM_STR);
         $stmn->bindValue(':editorId', $values['editorId'], PDO::PARAM_STR);
-        $stmn->bindValue(':modified', dtHelper()->userNow()->formatDateTimeForDb(), PDO::PARAM_STR);
+        $stmn->bindValue(':modified', gmdate('Y-m-d H:i:s'), PDO::PARAM_STR);
 
         $depending = $values['dependingTicketId'] ?? '';
 
@@ -1634,59 +1635,30 @@ class Tickets
      */
     public function updateTicket(array $values, $id): bool
     {
-
+        $columns = Schema::getColumnListing('zp_tickets');
+        $columnSet = array_flip($columns);
         $this->addTicketChange(session('userdata.id'), $id, $values);
 
-        $query = 'UPDATE zp_tickets
-			SET
-				headline = :headline,
-				type = :type,
-				description=:description,
-				projectId=:projectId,
-				status = :status,
-                date = :date,
-				dateToFinish = :dateToFinish,
-				sprint = :sprint,
-				storypoints = :storypoints,
-				priority = :priority,
-				hourRemaining = :hourRemaining,
-				planHours = :planHours,
-				tags = :tags,
-				editorId = :editorId,
-				editFrom = :editFrom,
-				editTo = :editTo,
-				acceptanceCriteria = :acceptanceCriteria,
-				dependingTicketId = :dependingTicketId,
-                milestoneid = :milestoneid,
-                modified = :modified
-			WHERE id = :id LIMIT 1';
+        $query = 'UPDATE zp_tickets SET';
+
+        foreach ($values as $key => $value) {
+            if (isset($columnSet[$key])) {
+                $query .= ' '.DbCore::sanitizeToColumnString($key).'= :'.DbCore::sanitizeToColumnString($key).', ';
+            }
+        }
+        $query .=' modified = :modified';
+		$query .= ' WHERE id = :id LIMIT 1';
 
         $stmn = $this->db->pdo()->prepare($query);
 
-        $stmn->bindValue(':headline', $values['headline'], PDO::PARAM_STR);
-        $stmn->bindValue(':type', $values['type'], PDO::PARAM_STR);
-        $stmn->bindValue(':description', $values['description'], PDO::PARAM_STR);
-        $stmn->bindValue(':projectId', $values['projectId'], PDO::PARAM_STR);
-        $stmn->bindValue(':status', $values['status'], PDO::PARAM_STR);
-        $stmn->bindValue(':date', $values['date'], PDO::PARAM_STR);
-        $stmn->bindValue(':dateToFinish', $values['dateToFinish'], PDO::PARAM_STR);
-        $stmn->bindValue(':sprint', $values['sprint'], PDO::PARAM_STR);
-        $stmn->bindValue(':storypoints', $values['storypoints'], PDO::PARAM_STR);
-        $stmn->bindValue(':priority', $values['priority'], PDO::PARAM_STR);
-        $stmn->bindValue(':hourRemaining', $values['hourRemaining'], PDO::PARAM_STR);
-        $stmn->bindValue(':acceptanceCriteria', $values['acceptanceCriteria'], PDO::PARAM_STR);
-        $stmn->bindValue(':planHours', $values['planHours'], PDO::PARAM_STR);
-        $stmn->bindValue(':tags', $values['tags'], PDO::PARAM_STR);
-        $stmn->bindValue(':editorId', $values['editorId'], PDO::PARAM_STR);
-        $stmn->bindValue(':editFrom', $values['editFrom'], PDO::PARAM_STR);
-        $stmn->bindValue(':editTo', $values['editTo'], PDO::PARAM_STR);
+        foreach ($values as $key => $value) {
+            if (isset($columnSet[$key])) {
+                $stmn->bindValue(':' . DbCore::sanitizeToColumnString($key), $value, PDO::PARAM_STR);
+            }
+        }
+        $stmn->bindValue(':modified', gmdate('Y-m-d H:i:s'), PDO::PARAM_STR);
         $stmn->bindValue(':id', $id, PDO::PARAM_STR);
-        $stmn->bindValue(':dependingTicketId', $values['dependingTicketId'], PDO::PARAM_STR);
-        $stmn->bindValue(':milestoneid', $values['milestoneid'], PDO::PARAM_STR);
-        $stmn->bindValue(':modified', dtHelper()->userNow()->formatDateTimeForDb(), PDO::PARAM_STR);
-
         $result = $stmn->execute();
-
         $stmn->closeCursor();
 
         return $result;
@@ -1710,7 +1682,7 @@ class Tickets
             $stmn->bindValue(':status', $status, PDO::PARAM_INT);
             $stmn->bindValue(':sortIndex', $ticketSorting, PDO::PARAM_INT);
             $stmn->bindValue(':ticketId', $ticketId, PDO::PARAM_INT);
-            $stmn->bindValue(':modified', dtHelper()->userNow()->formatDateTimeForDb(), PDO::PARAM_STR);
+            $stmn->bindValue(':modified', gmdate('Y-m-d H:i:s'), PDO::PARAM_STR);
         } else {
             $query = 'UPDATE zp_tickets
 					SET
@@ -1722,7 +1694,7 @@ class Tickets
             $stmn = $this->db->pdo()->prepare($query);
             $stmn->bindValue(':status', $status, PDO::PARAM_INT);
             $stmn->bindValue(':ticketId', $ticketId, PDO::PARAM_INT);
-            $stmn->bindValue(':modified', dtHelper()->userNow()->formatDateTimeForDb(), PDO::PARAM_STR);
+            $stmn->bindValue(':modified', gmdate('Y-m-d H:i:s'), PDO::PARAM_STR);
         }
 
         static::dispatch_event('ticketStatusUpdate', ['ticketId' => $ticketId, 'status' => $status, 'action' => 'ticketStatusUpdate', 'handler' => $handler]);
@@ -1734,6 +1706,9 @@ class Tickets
         return $result;
     }
 
+    /**
+     * addTicketChange - logs changes to tickets to zp_tickethistory table
+     */
     public function addTicketChange($userId, $ticketId, $values): void
     {
         if (empty($ticketId)) {
@@ -1755,6 +1730,7 @@ class Tickets
             'planHours' => 'planHours',
             'status' => 'status',
             'effort' => 'storypoints',
+            'group_id'=> 'group_id',
         ];
 
         $changedFields = [];
@@ -1838,7 +1814,7 @@ class Tickets
 
         $stmn = $this->db->pdo()->prepare($query);
         $stmn->bindValue(':id', $id, PDO::PARAM_STR);
-        $stmn->bindValue(':modified', dtHelper()->userNow()->formatDateTimeForDb(), PDO::PARAM_STR);
+        $stmn->bindValue(':modified', gmdate('Y-m-d H:i:s'), PDO::PARAM_STR);
         $stmn->execute();
 
         $query = "UPDATE zp_canvas_items

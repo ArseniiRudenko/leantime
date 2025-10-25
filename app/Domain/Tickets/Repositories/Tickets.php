@@ -321,29 +321,14 @@ class Tickets
      */
     public function getAllBySearchCriteria(array $searchCriteria, string $sort = 'standard', $limit = null, $includeCounts = true, $offset = null): bool|array
     {
-        $query = "
-                SELECT
-                     zp_tickets.id,
-                zp_tickets.headline,
-                zp_tickets.description,
-                zp_tickets.date,
-                zp_tickets.sprint,
+        $columns = Cache::remember('table_columns_array:zp_tickets',600 , function (){ return Schema::getColumnListing('zp_tickets'); });
+
+        $query = "SELECT ";
+        foreach ($columns as $column) {
+            $query .= "zp_tickets.".$column.",";
+        }
+        $query .= "
                 zp_sprints.name as sprintName,
-                zp_tickets.storypoints,
-                zp_tickets.sortindex,
-                zp_tickets.dateToFinish,
-                zp_tickets.projectId,
-                zp_tickets.priority,
-                IF(zp_tickets.type <> '', zp_tickets.type, 'task') AS type,
-                zp_tickets.status,
-                zp_tickets.tags,
-                zp_tickets.editorId,
-                zp_tickets.dependingTicketId,
-                zp_tickets.milestoneid,
-                zp_tickets.planHours,
-                zp_tickets.editFrom,
-                zp_tickets.editTo,
-                zp_tickets.hourRemaining,
                 COALESCE(ROUND(timesheet_agg.total_hours, 2), 0) AS bookedHours,
                 zp_projects.name AS projectName,
                 zp_clients.name AS clientName,
@@ -1635,7 +1620,7 @@ class Tickets
      */
     public function updateTicket(array $values, $id): bool
     {
-        $columns = Schema::getColumnListing('zp_tickets');
+        $columns = Cache::remember('table_columns_array:zp_tickets',600 , function (){ return Schema::getColumnListing('zp_tickets'); });
         $columnSet = array_flip($columns);
         $this->addTicketChange(session('userdata.id'), $id, $values);
 

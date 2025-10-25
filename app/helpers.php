@@ -29,19 +29,19 @@ if (! function_exists('array_sort')) {
     /**
      * sort array of arrqays by value
      *
-     * @param  string  $sortyBy
+     * @param  string  $sortBy
      */
-    function array_sort(array $array, mixed $sortyBy): array
+    function array_sort(array $array, mixed $sortBy): array
     {
 
-        if (is_string($sortyBy)) {
+        if (is_string($sortBy)) {
             $collection = collect($array);
 
-            $sorted = $collection->sortBy($sortyBy, SORT_NATURAL);
+            $sorted = $collection->sortBy($sortBy, SORT_NATURAL);
 
             return $sorted->values()->all();
         } else {
-            return \Illuminate\Support\Collection::make($array)->sortBy($sortyBy)->all();
+            return \Illuminate\Support\Collection::make($array)->sortBy($sortBy)->all();
         }
     }
 }

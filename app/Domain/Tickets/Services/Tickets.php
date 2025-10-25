@@ -583,8 +583,6 @@ class Tickets
      */
     public function getAllGrouped($searchCriteria): array
     {
-        $ticketGroups = [];
-
         $tickets = $this->ticketRepository->getAllBySearchCriteria(
             $searchCriteria,
             $searchCriteria['orderBy'] ?? 'date'
@@ -605,114 +603,122 @@ class Tickets
             return $ticketGroups;
         }
 
-        $groupByOptions = $this->getGroupByFieldOptions();
 
+        $ticketGroups = [];
         foreach ($tickets as $ticket) {
             $class = '';
             $moreInfo = '';
 
-            if (isset($ticket[$searchCriteria['groupBy']])) {
-                $groupedFieldValue = strtolower($ticket[$searchCriteria['groupBy']]);
+            $groupedFieldValue = $ticket[$searchCriteria['groupBy']];
+            if($groupedFieldValue == null)
+                $groupedFieldValue = 0;
 
-                if (isset($ticketGroups[$groupedFieldValue])) {
-                    $ticketGroups[$groupedFieldValue]['items'][] = $ticket;
-                } else {
-                    switch ($searchCriteria['groupBy']) {
-                        case 'status':
-                            $status = $this->getStatusLabels();
+            if (isset($ticketGroups[$groupedFieldValue])) {
+                $ticketGroups[$groupedFieldValue]['items'][] = $ticket;
+            } else {
+                switch ($searchCriteria['groupBy']) {
+                    case 'status':
+                        $status = $this->getStatusLabels();
 
-                            if (isset($status[$groupedFieldValue])) {
-                                $label = $status[$groupedFieldValue]['name'];
-                                $class = $status[$groupedFieldValue]['class'];
-                            } else {
-                                $label = 'New';
+                        if (isset($status[$groupedFieldValue])) {
+                            $label = $status[$groupedFieldValue]['name'];
+                            $class = $status[$groupedFieldValue]['class'];
+                        } else {
+                            $label = 'New';
+                        }
+
+                        break;
+                    case 'priority':
+                        $priorities = $this->getPriorityLabels();
+                        if (isset($priorities[$groupedFieldValue])) {
+                            $label = $priorities[$groupedFieldValue];
+                            $class = 'priority-text-'.$groupedFieldValue;
+                        } else {
+                            $label = 'No Priority Set';
+                        }
+                        break;
+                    case 'storypoints':
+                        $efforts = $this->getEffortLabels();
+                        $label = $efforts[$groupedFieldValue] ?? 'No Effort Set';
+                        break;
+                    case 'milestoneid':
+                        $label = 'No Milestone Set';
+                        if ($ticket['milestoneid'] > 0) {
+                            $milestone = $this->getTicket($ticket['milestoneid']);
+                            $color = $milestone->tags;
+                            $class = '" style="color:'.$color.'"';
+
+                            try {
+                                $startDate = dtHelper()->parseDbDateTime($milestone->editFrom)->formatDateForUser();
+                            } catch (\Exception $e) {
+                                $startDate = $this->language->__('text.no_date_defined');
                             }
 
-                            break;
-                        case 'priority':
-                            $priorities = $this->getPriorityLabels();
-                            if (isset($priorities[$groupedFieldValue])) {
-                                $label = $priorities[$groupedFieldValue];
-                                $class = 'priority-text-'.$groupedFieldValue;
-                            } else {
-                                $label = 'No Priority Set';
-                            }
-                            break;
-                        case 'storypoints':
-                            $efforts = $this->getEffortLabels();
-                            $label = $efforts[$groupedFieldValue] ?? 'No Effort Set';
-                            break;
-                        case 'milestoneid':
-                            $label = 'No Milestone Set';
-                            if ($ticket['milestoneid'] > 0) {
-                                $milestone = $this->getTicket($ticket['milestoneid']);
-                                $color = $milestone->tags;
-                                $class = '" style="color:'.$color.'"';
-
-                                try {
-                                    $startDate = dtHelper()->parseDbDateTime($milestone->editFrom)->formatDateForUser();
-                                } catch (\Exception $e) {
-                                    $startDate = $this->language->__('text.no_date_defined');
-                                }
-
-                                try {
-                                    $endDate = dtHelper()->parseDbDateTime($milestone->editTo)->formatDateForUser();
-                                } catch (\Exception $e) {
-                                    $endDate = $this->language->__('text.no_date_defined');
-                                }
-
-                                $statusLabels = $this->getStatusLabels($milestone->projectId);
-                                $status = $statusLabels[$milestone->status]['name'];
-                                $class = '" style="color:'.$color.'"';
-                                $moreInfo = $this->language->__('label.start').': '.$startDate.' • '.$this->language->__('label.end').': '.$endDate.' • '.$this->language->__('label.status_lowercase').': '.$status;
-                                $label = $ticket['milestoneHeadline']." <a href='#/tickets/editMilestone/".$ticket['milestoneid']."' style='float:right;'><i class='fa fa-edit'></i></a><a>";
+                            try {
+                                $endDate = dtHelper()->parseDbDateTime($milestone->editTo)->formatDateForUser();
+                            } catch (\Exception $e) {
+                                $endDate = $this->language->__('text.no_date_defined');
                             }
 
-                            break;
-                        case 'editorId':
-                            $label = "<div class='profileImage'><img src='".BASE_URL.'/api/users?profileImage='.$ticket['editorId']."' alt='User profile image' /></div> ".$ticket['editorFirstname'].' '.$ticket['editorLastname'];
+                            $statusLabels = $this->getStatusLabels($milestone->projectId);
+                            $status = $statusLabels[$milestone->status]['name'];
+                            $class = '" style="color:'.$color.'"';
+                            $moreInfo = $this->language->__('label.start').': '.$startDate.' • '.$this->language->__('label.end').': '.$endDate.' • '.$this->language->__('label.status_lowercase').': '.$status;
+                            $label = $ticket['milestoneHeadline']." <a href='#/tickets/editMilestone/".$ticket['milestoneid']."' style='float:right;'><i class='fa fa-edit'></i></a><a>";
+                        }
 
-                            if ($ticket['editorFirstname'] == '' && $ticket['editorLastname'] == '') {
-                                $label = 'Not Assigned to Anyone';
-                            }
+                        break;
+                    case 'editorId':
+                        $label = "<div class='profileImage'><img src='".BASE_URL.'/api/users?profileImage='.$ticket['editorId']."' alt='User profile image' /></div> ".$ticket['editorFirstname'].' '.$ticket['editorLastname'];
 
-                            break;
-                        case 'sprint':
-                            $label = $ticket['sprintName'];
-                            if ($label == '') {
-                                $label = 'Not assigned to a sprint';
-                            }
-                            break;
-                        case 'type':
-                            $icon = $this->getTypeIcons();
-                            $label = "<i class='fa ".($icon[strtolower($ticket['type'])] ?? '')."'></i>".$ticket['type'];
-                            break;
-                        default:
-                            $label = $groupedFieldValue;
-                            break;
-                    }
+                        if ($ticket['editorFirstname'] == '' && $ticket['editorLastname'] == '') {
+                            $label = 'Not Assigned to Anyone';
+                        }
 
-                    $ticketGroups[$groupedFieldValue] = [
-                        'label' => $label,
-                        'more-info' => $moreInfo,
-                        'id' => strtolower($groupedFieldValue),
-                        'class' => $class,
-                        'items' => [$ticket],
-                    ];
+                        break;
+                    case 'sprint':
+                        $label = $ticket['sprintName'];
+                        if ($label == '') {
+                            $label = 'Not assigned to a sprint';
+                        }
+                        break;
+                    case 'type':
+                        $icon = $this->getTypeIcons();
+                        $label = "<i class='fa ".($icon[strtolower($ticket['type'])] ?? '')."'></i>".$ticket['type'];
+                        break;
+                    default:
+                        $label = "$groupedFieldValue";
+                        break;
                 }
+                $groupInitialValue = [
+                    'label' => $label,
+                    'more-info' => $moreInfo,
+                    'id' =>  strtolower($groupedFieldValue),
+                    'class' => $class,
+                    'items' => [$ticket],
+                ];
+                $ticketGroups[$groupedFieldValue] = self::dispatchFilter('ticketGroupLabel', $groupInitialValue,['ticket'=> $ticket, 'grouping' => $searchCriteria['groupBy']]);;
             }
+
         }
 
         // Sort main groups
-
         switch ($searchCriteria['groupBy']) {
             case 'status':
+                $ticketGroups = array_reverse(array_sort($ticketGroups, 'id'));
+                break;
             case 'priority':
             case 'storypoints':
-                $ticketGroups = array_sort($ticketGroups, 'id');
-                // no break
+               $ticketGroups = array_sort($ticketGroups, 'id');
+               break;
             default:
                 $ticketGroups = array_sort($ticketGroups, 'label');
+                //if there is a zero id, move it to the first position but leave the rest of the array in the same order
+                $index = array_search(0, array_column($ticketGroups, 'id'));
+                if ($index !== false) {
+                    $item = array_splice($ticketGroups, $index, 1)[0];
+                    array_unshift($ticketGroups, $item);
+                }
                 break;
         }
 
@@ -2192,7 +2198,7 @@ class Tickets
      */
     public function getGroupByFieldOptions(): array
     {
-        return [
+        $gropByFieldOptions = [
             'all' => [
                 'id' => 'all',
                 'field' => 'all',
@@ -2240,24 +2246,17 @@ class Tickets
                 'field' => 'editorId',
                 'label' => 'user',
                 'class' => '',
-                'funtion' => 'buildEditorName',
+                'function' => 'buildEditorName',
             ],
             'sprint' => [
                 'id' => 'sprint',
                 'field' => 'sprint',
                 'class' => '',
                 'label' => 'sprint',
-            ],
-
-            /*
-            "tags" => [
-                'id' => 'groupByTagsLink',
-                'field' => 'tags',
-                'label' => 'tags',
-            ],* @api
-*
-*/
+            ]
         ];
+
+        return  self::dispatchFilter('ticket_group_by_field_options', $gropByFieldOptions);
     }
 
     /**

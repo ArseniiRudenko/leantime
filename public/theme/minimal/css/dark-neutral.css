@@ -1,11 +1,11 @@
 :root {
 
-    --accent1: hsla(198, 100%, 32%, 1);
+    --accent1: gray;
     --accent1-hsl: 199, 100%, 20%;
     --accent1-hover: #404040;
     --accent1-color: #fff;
 
-    --accent2: hsla(168, 100%, 33%, 1);
+    --accent2: lightgray;
     --accent2-hsl: 168, 100%, 33%;
     --accent2-hover: #404040;
     --accent2-color: #fff;

@@ -225,12 +225,10 @@ class EditOwn extends Controller
 
                 $postTheme = htmlentities($_POST['theme'] ?? 'default');
                 $postColorMode = htmlentities($_POST['colormode'] ?? 'light');
-                $postColorScheme = htmlentities($_POST['colorscheme'] ?? 'themeDefault');
                 $themeFont = htmlentities($_POST['themeFont']);
 
                 $this->settingsService->saveSetting('usersettings.'.$this->userId.'.theme', $postTheme);
                 $this->settingsService->saveSetting('usersettings.'.$this->userId.'.colorMode', $postColorMode);
-                $this->settingsService->saveSetting('usersettings.'.$this->userId.'.colorScheme', $postColorScheme);
                 $this->settingsService->saveSetting('usersettings.'.$this->userId.'.themeFont', $themeFont);
                 $this->themeCore::clearCache();
                 $this->themeCore->setActive($postTheme);

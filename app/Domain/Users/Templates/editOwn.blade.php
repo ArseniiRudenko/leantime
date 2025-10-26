@@ -301,14 +301,26 @@
                                         <hr />
                                         <label for="colormode" >{{ __('label.colormode') }}</label>
 
-                                        <x-global::selectable :selected="($userColorMode == 'light-leantime') ? 'true' : ''" :id="'light-leantime'" :name="'colormode'" :value="'light-leantime'" :label="'Light'" onclick="leantime.snippets.toggleColor('light-leantime')">
+                                        <x-global::selectable :selected="($userColorMode == 'light-leantime') ? 'true' : ''" :id="'light-leantime'" :name="'colormode'" :value="'light-leantime'" :label="'Leantime Light'" onclick="leantime.snippets.toggleColor('light-leantime')">
                                             <label for="colormode-light" class="tw-w-[100px]">
                                                 <i class="fa-solid fa-sun tw-font-xxl"></i>
                                             </label>
                                         </x-global::selectable>
 
-                                        <x-global::selectable :selected="($userColorMode == 'dark-leantime') ? 'true' : ''" :id="'dark-leantime'" :name="'colormode'" :value="'dark-leantime'" :label="'Dark'" onclick="leantime.snippets.toggleColor('dark-leantime')">
+                                        <x-global::selectable :selected="($userColorMode == 'dark-leantime') ? 'true' : ''" :id="'dark-leantime'" :name="'colormode'" :value="'dark-leantime'" :label="'Leantime Dark'" onclick="leantime.snippets.toggleColor('dark-leantime')">
                                             <label for="colormode-dark" class="tw-w-[100px]">
+                                                <i class="fa-solid fa-moon tw-font-xxl"></i>
+                                            </label>
+                                        </x-global::selectable>
+
+                                        <x-global::selectable :selected="($userColorMode == 'light-neutral') ? 'true' : ''" :id="'light-neutral'" :name="'colormode'" :value="'light-neutral'" :label="'Neutral Light'" onclick="leantime.snippets.toggleColor('light-neutral')">
+                                            <label for="colormode-light-neutral" class="tw-w-[100px]">
+                                                <i class="fa-solid fa-sun tw-font-xxl"></i>
+                                            </label>
+                                        </x-global::selectable>
+
+                                        <x-global::selectable :selected="($userColorMode == 'dark-neutral') ? 'true' : ''" :id="'dark-neutral'" :name="'colormode'" :value="'dark-neutral'" :label="'neutral Dark'" onclick="leantime.snippets.toggleColor('dark-neutral')">
+                                            <label for="colormode-dark-neutral" class="tw-w-[100px]">
                                                 <i class="fa-solid fa-moon tw-font-xxl"></i>
                                             </label>
                                         </x-global::selectable>

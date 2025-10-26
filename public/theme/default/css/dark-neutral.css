@@ -5,7 +5,7 @@
     --accent1-hover: #555;
     --accent1-color: #fff;
 
-    --accent2: hsla(168, 100%, 33%, 1);
+    --accent2: lightgray;
     --accent2-hsl: 168, 100%, 33%;
     --accent2-hover: #555;
     --accent2-color: #fff;

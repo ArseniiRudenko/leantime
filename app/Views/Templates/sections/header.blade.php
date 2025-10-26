@@ -6,7 +6,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-touch-fullscreen" content="yes">
-<meta name="theme-color" content="{{ $primaryColor }}">
 <meta name="color-scheme" content="{{ $themeColorMode }}">
 <meta name="theme" content="{{ $theme }}">
 <meta name="identifier-URL" content="{!! BASE_URL !!}">
@@ -59,16 +58,6 @@
 
 @dispatchEvent('afterScriptsAndStyles')
 
-<!-- Replace main theme colors -->
-<style id="colorSchemeSetter">
-    @foreach ($accents as $accent)
-        @if($accent !== false)
-            :root {
-                --accent{{ $loop->iteration }}: {{{ $accent }}};
-            }
-        @endif
-    @endforeach
-</style>
 
 <style id="fontStyleSetter">
     :root {

@@ -20,13 +20,13 @@
             <div class="col-md-12">
                 <label for="colormode" >{{ __('label.colormode') }}</label>
 
-                <x-global::selectable :selected="($userColorMode == 'light') ? 'true' : ''" :id="'light'" :name="'colormode'" :value="'light'" :label="'Light'" onclick="leantime.snippets.toggleTheme('light')">
+                <x-global::selectable :selected="($userColorMode == 'light-leantime') ? 'true' : ''" :id="'light-leantime'" :name="'colormode'" :value="'light-leantime'" :label="'Light'" onclick="leantime.snippets.toggleColor('light-leantime')">
                     <label for="colormode-light" class="tw-w-[200px]">
                         <i class="fa-solid fa-sun tw-font-xxl"></i>
                     </label>
                 </x-global::selectable>
 
-                <x-global::selectable :selected="($userColorMode == 'dark') ? 'true' : ''" :id="'dark'" :name="'colormode'" :value="'dark'" :label="'Dark'" onclick="leantime.snippets.toggleTheme('dark')">
+                <x-global::selectable :selected="($userColorMode == 'dark-leantime') ? 'true' : ''" :id="'dark-leantime'" :name="'colormode'" :value="'dark-leantime'" :label="'Dark'" onclick="leantime.snippets.toggleColor('dark-leantime')">
                     <label for="colormode-light" class="tw-w-[200px]">
                         <i class="fa-solid fa-moon tw-font-xxl"></i>
                     </label>

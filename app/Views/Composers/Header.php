@@ -38,7 +38,6 @@ class Header extends Composer
     {
         $theme = $this->themeCore->getActive();
         $colorMode = $this->themeCore->getColorMode();
-        $colorScheme = $this->themeCore->getColorScheme();
         $themeFont = $this->themeCore->getFont();
 
         // Set colors to use
@@ -58,7 +57,6 @@ class Header extends Composer
 
         return [
             'sitename' => session('companysettings.sitename') ?? '',
-            'primaryColor' => $this->themeCore->getPrimaryColor(),
             'theme' => $theme,
             'version' => $this->appSettings->appVersion ?? '',
             'themeScripts' => [
@@ -66,20 +64,15 @@ class Header extends Composer
                 $this->themeCore->getCustomJsUrl() ?? '',
             ],
             'themeColorMode' => $colorMode,
-            'themeColorScheme' => $colorScheme,
             'themeFont' => $themeFont,
             'themeStyles' => [
                 [
                     'id' => 'themeStyleSheet',
-                    'url' => $this->themeCore->getStyleUrl() ?? '',
+                    'url' => $this->themeCore->getStyleUrl(),
                 ],
                 [
                     'url' => $this->themeCore->getCustomStyleUrl() ?? '',
                 ],
-            ],
-            'accents' => [
-                $this->themeCore->getPrimaryColor(),
-                $this->themeCore->getSecondaryColor(),
             ],
             'themeBg' => $this->themeCore->getBackgroundImage(),
             'themeOpacity' => $backgroundOpacity,

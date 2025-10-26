@@ -60,13 +60,7 @@ class EditOwn extends Controller
 
         $userColorMode = $this->settingsService->getSetting('usersettings.'.$this->userId.'.colorMode');
         if (! $userColorMode) {
-            $userColorMode = 'light';
-        }
-
-        $availableColorSchemes = $this->themeCore->getAvailableColorSchemes();
-        $userColorScheme = $this->settingsService->getSetting('usersettings.'.$this->userId.'.colorScheme');
-        if (! $userColorScheme) {
-            $userColorScheme = isset($availableColorSchemes['companyColors']) ? 'companyColors' : 'themeDefault';
+            $userColorMode = 'light-leantime';
         }
 
         $themeFont = $this->settingsService->getSetting('usersettings.'.$this->userId.'.themeFont');
@@ -115,13 +109,11 @@ class EditOwn extends Controller
         $this->tpl->assign('userTheme', $userTheme);
         $this->tpl->assign('themeFont', $themeFont);
         $this->tpl->assign('userColorMode', $userColorMode);
-        $this->tpl->assign('userColorScheme', $userColorScheme);
         $this->tpl->assign('languageList', $this->language->getLanguageList());
         $this->tpl->assign('dateFormat', $userDateFormat);
         $this->tpl->assign('timeFormat', $userTimeFormat);
         $this->tpl->assign('dateTimeValues', $this->getSupportedDateTimeFormats());
         $this->tpl->assign('timezone', $timezone);
-        $this->tpl->assign('availableColorSchemes', $availableColorSchemes);
         $this->tpl->assign('availableFonts', $this->themeCore->getAvailableFonts());
         $this->tpl->assign('availableThemes', $this->themeCore->getAll());
         $this->tpl->assign('timezoneOptions', $timezonesAvailable);
@@ -243,7 +235,6 @@ class EditOwn extends Controller
                 $this->themeCore::clearCache();
                 $this->themeCore->setActive($postTheme);
                 $this->themeCore->setColorMode($postColorMode);
-                $this->themeCore->setColorScheme($postColorScheme);
                 $this->themeCore->setFont($themeFont);
 
                 $this->tpl->setNotification($this->language->__('notifications.changed_profile_settings_successfully'), 'success', 'themsettings_updated');

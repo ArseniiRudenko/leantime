@@ -301,14 +301,14 @@
                                         <hr />
                                         <label for="colormode" >{{ __('label.colormode') }}</label>
 
-                                        <x-global::selectable :selected="($userColorMode == 'light') ? 'true' : ''" :id="'light'" :name="'colormode'" :value="'light'" :label="'Light'" onclick="leantime.snippets.toggleTheme('light')">
+                                        <x-global::selectable :selected="($userColorMode == 'light-leantime') ? 'true' : ''" :id="'light-leantime'" :name="'colormode'" :value="'light-leantime'" :label="'Light'" onclick="leantime.snippets.toggleColor('light-leantime')">
                                             <label for="colormode-light" class="tw-w-[100px]">
                                                 <i class="fa-solid fa-sun tw-font-xxl"></i>
                                             </label>
                                         </x-global::selectable>
 
-                                        <x-global::selectable :selected="($userColorMode == 'dark') ? 'true' : ''" :id="'dark'" :name="'colormode'" :value="'dark'" :label="'Dark'" onclick="leantime.snippets.toggleTheme('dark')">
-                                            <label for="colormode-light" class="tw-w-[100px]">
+                                        <x-global::selectable :selected="($userColorMode == 'dark-leantime') ? 'true' : ''" :id="'dark-leantime'" :name="'colormode'" :value="'dark-leantime'" :label="'Dark'" onclick="leantime.snippets.toggleColor('dark-leantime')">
+                                            <label for="colormode-dark" class="tw-w-[100px]">
                                                 <i class="fa-solid fa-moon tw-font-xxl"></i>
                                             </label>
                                         </x-global::selectable>
@@ -330,19 +330,6 @@
 
                                         @endforeach
 
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <hr />
-                                        <label>Color Scheme</label>
-                                        @foreach($availableColorSchemes as $key => $scheme )
-                                            <x-global::selectable class="circle" :selected="($userColorScheme == $key) ? 'true' : ''" :id="$key" :name="'colorscheme'" :value="$key" :label="__($scheme['name'])"  onclick="leantime.snippets.toggleColors('{{ $scheme['primaryColor'] }}','{{ $scheme['secondaryColor'] }}');">
-                                                <label for="color-{{ $key }}" class="colorCircle"
-                                                       style="background:linear-gradient(135deg, {{ $scheme["primaryColor"] }} 20%, {{ $scheme["secondaryColor"] }} 100%);">
-                                                </label>
-                                            </x-global::selectable>
-                                        @endforeach
                                     </div>
                                 </div>
                             </div>

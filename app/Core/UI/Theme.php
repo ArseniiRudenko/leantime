@@ -54,7 +54,7 @@ class Theme
      *
      * @final
      */
-    public const DEFAULT_CSS = 'light';
+    public const DEFAULT_CSS = 'light-leantime';
 
     /**
      * Theme JavaScript library (excluding .js extension)
@@ -115,21 +115,6 @@ class Theme
 
     private array|false $iniData;
 
-    private array $colorSchemes = [
-        'grayscale1' => [
-            'name' => 'Grayscale',
-            'primaryColor' => '#000000',
-            'secondaryColor' => '#757575',
-        ],
-        'grayscale2' => [
-            'name' => 'Grayscale Reverse',
-            'primaryColor' => '#d1d1d1',
-            'secondaryColor' => '#000000',
-        ],
-        'themeDefault' => 'themeDefault',
-        'companyColors' => 'companyColors',
-    ];
-
     private array $backgroundTypes = ['gradient', 'image'];
 
     private array $backgroundSources = ['unsplash', 'upload'];
@@ -169,43 +154,6 @@ class Theme
         $this->appSettings = $appSettings;
         $this->fileManager = $fileManager;
 
-    }
-
-    /**
-     * Retrieves the available color schemes.
-     *
-     * @return array The available color schemes.
-     */
-    public function getAvailableColorSchemes(): array
-    {
-
-        $this->readIniData();
-
-        $parsedColorSchemes = $this->colorSchemes;
-        $parsedColorSchemes['themeDefault'] = [
-            'name' => 'Leantime',
-            'primaryColor' => $this->iniData['general']['primaryColor'] ?? $this->colorSchemes['themeDefault']['primaryColor'],
-            'secondaryColor' => $this->iniData['general']['secondaryColor'] ?? $this->colorSchemes['themeDefault']['secondaryColor'],
-        ];
-
-        $primaryColor = $this->settingsRepo->getSetting('companysettings.primarycolor') ? $this->settingsRepo->getSetting('companysettings.primarycolor') : null;
-        $secondaryColor = $this->settingsRepo->getSetting('companysettings.secondarycolor') ? $this->settingsRepo->getSetting('companysettings.secondarycolor') : null;
-
-        $parsedColorSchemes['companyColors'] = [
-            'name' => 'label.companyColors',
-            'primaryColor' => $primaryColor ?? $this->config->primarycolor ?? $parsedColorSchemes['themeDefault']['primaryColor'],
-            'secondaryColor' => $secondaryColor ?? $this->config->secondarycolor ?? $parsedColorSchemes['themeDefault']['secondaryColor'],
-        ];
-
-        if (
-            $parsedColorSchemes['companyColors']['primaryColor'] == $parsedColorSchemes['themeDefault']['primaryColor'] &&
-            $parsedColorSchemes['companyColors']['secondaryColor'] == $parsedColorSchemes['themeDefault']['secondaryColor']) {
-            unset($parsedColorSchemes['companyColors']);
-        }
-
-        $colorschemes = self::dispatchFilter('colorschemes', $parsedColorSchemes);
-
-        return $colorschemes;
     }
 
     public function getAvailableFonts()
@@ -327,57 +275,9 @@ class Theme
         }
 
         // Return default
-        session(['usersettings.colorMode' => 'light']);
+        session(['usersettings.colorMode' => 'light-leantime']);
 
-        return 'light';
-    }
-
-    /**
-     * getColorScheme - Return the active color scheme
-     * Color schemes can be chosen by the user and can be themedefault, company colors or other predefined schemes
-     * The colors that change are accent1 and accent2
-     *
-     * @return string Active theme identifier
-     */
-    public function getColorScheme()
-    {
-
-        // Return generic theme
-        if (session()->exists('usersettings.colorScheme') && Auth::isLoggedIn()) {
-            $this->setAccentColors(session('usersettings.colorScheme'));
-
-            return session('usersettings.colorScheme');
-        }
-
-        if (Auth::isLoggedIn()) {
-            // User is logged in, we don't have a theme yet, check settings
-
-            $colorScheme = $this->settingsRepo->getSetting('usersettings.'.session('userdata.id').'.colorScheme');
-            if ($colorScheme !== false) {
-                $this->setColorScheme($colorScheme);
-
-                return $colorScheme;
-            }
-        }
-
-        if (isset($_COOKIE['colorScheme'])) {
-            $this->setColorScheme($_COOKIE['colorScheme']);
-
-            return $_COOKIE['colorScheme'];
-        }
-
-        if (! empty($this->config->primarycolor) && ! empty($this->config->secondarycolor)) {
-            // Return default
-            $this->setColorScheme('companyColors');
-
-            return 'companyColors';
-        } else {
-            // Return default
-            $this->setColorScheme('themeDefault');
-
-            return 'themeDefault';
-        }
-
+        return 'light-leantime';
     }
 
     /**
@@ -465,7 +365,7 @@ class Theme
     public function setColorMode(string $colorMode): void
     {
         if ($colorMode == '') {
-            $colorMode = 'light';
+            $colorMode = 'light-leantime';
         }
 
         // Only store colors in session for logged in users
@@ -514,35 +414,6 @@ class Theme
         );
     }
 
-    /**
-     * setColorScheme - Set active theme
-     *
-     *
-     * @param  string  $colorScheme  color scheme of theme (themeDefault, companyColors).
-     */
-    public function setColorScheme(string $colorScheme): void
-    {
-
-        if ($colorScheme == '') {
-            $colorScheme = 'themeDefault';
-        }
-
-        if (Auth::isLoggedIn()) {
-            session(['usersettings.colorScheme' => $colorScheme]);
-            $this->setAccentColors($colorScheme);
-        }
-
-        EventDispatcher::addFilterListener(
-            'leantime.core.http.httpkernel.handle.beforeSendResponse',
-            fn ($response) => tap($response, fn (Response $response) => $response->headers->setCookie(
-                Cookie::create('colorScheme')
-                    ->withValue($colorScheme)
-                    ->withExpires(time() + 60 * 60 * 24 * 30)
-                    ->withPath(Str::finish($this->config->appDir, '/'))
-                    ->withSameSite('Strict')
-            ))
-        );
-    }
 
     /**
      * getAll - Return an array of all themes
@@ -596,7 +467,6 @@ class Theme
      */
     public function getDir(): string
     {
-
         return ROOT.'/theme/'.$this->getActive();
     }
 
@@ -803,154 +673,6 @@ class Theme
 
     }
 
-    /**
-     * Sets the accent colors for the specified color scheme.
-     *
-     * @param  string  $colorScheme  The name of the color scheme.
-     * @return void
-     */
-    public function setAccentColors(string $colorScheme)
-    {
-
-        if ($colorScheme == 'themeDefault') {
-            $this->setThemeDefaultColors();
-        } elseif ($colorScheme == 'companyColors') {
-            $this->setCompanyColors();
-        } else {
-            $this->setSchemeColors($colorScheme);
-        }
-    }
-
-    /**
-     * Sets the default theme colors in the user's settings.
-     *
-     * This method sets the primary and secondary colors of the theme to the default values by assigning false to the corresponding session variables.
-     */
-    public function setThemeDefaultColors()
-    {
-        // Using default css values
-        session(['usersettings.colors.primaryColor' => false]);
-        session(['usersettings.colors.secondaryColor' => false]);
-    }
-
-    /**
-     * Sets the company colors in the user's settings.
-     *
-     * If the primary color setting is not already set in the user's settings,
-     * it retrieves the primary color setting from the company settings. If the
-     * primary color setting is not found in the company settings, it sets the
-     * primary and secondary colors to the values specified in the application's
-     * config file.
-     *
-     * If the secondary color setting is found in the company settings, it
-     * sets the secondary color in the user's settings as well.
-     *
-     * @return void
-     */
-    public function setCompanyColors()
-    {
-
-        if (! session()->exists('usersettings.colors.primaryColor')) {
-
-            $primaryColor = $this->settingsRepo->getSetting('companysettings.primarycolor');
-
-            if ($primaryColor !== false) {
-                session(['usersettings.colors.primaryColor' => $primaryColor]);
-                session(['usersettings.colors.secondaryColor' => $primaryColor]);
-            } else {
-                session(['usersettings.colors.primaryColor' => $this->config->primaryColor]);
-                session(['usersettings.colors.secondaryColor' => $this->config->secondaryColor]);
-            }
-
-            $secondaryColor = $this->settingsRepo->getSetting('companysettings.secondaryColor');
-            if ($secondaryColor !== false) {
-                session(['usersettings.colors.secondaryColor' => $secondaryColor]);
-            }
-        }
-    }
-
-    /**
-     * Sets the primary and secondary colors for the user's color scheme.
-     *
-     * @param  string  $colorscheme  The color scheme to set. Should be a valid key in the available color schemes array.
-     * @return void
-     */
-    public function setSchemeColors($colorscheme)
-    {
-
-        $colorSchemes = $this->getAvailableColorSchemes();
-        if (isset($colorSchemes[$colorscheme]['primaryColor'])) {
-            $primary = $colorSchemes[$colorscheme]['primaryColor'];
-            session(['usersettings.colors.primaryColor' => $primary]);
-        }
-
-        if (isset($colorSchemes[$colorscheme]['secondaryColor'])) {
-            $secondary = $colorSchemes[$colorscheme]['secondaryColor'];
-            session(['usersettings.colors.secondaryColor' => $secondary]);
-        }
-
-    }
-
-    /**
-     * Retrieves the primary color from the user's settings or the default color scheme.
-     *
-     * @return string The primary color.
-     */
-    public function getPrimaryColor()
-    {
-
-        if (
-            session()->exists('usersettings.colors.primaryColor')
-            && session('usersettings.colors.primaryColor') != ''
-            && Auth::isLoggedIn()
-        ) {
-            return session('usersettings.colors.primaryColor');
-        }
-
-        $currentColorScheme = $this->getColorScheme();
-
-        $colorSchemes = $this->getAvailableColorSchemes();
-
-        $pickedScheme = $colorSchemes[$currentColorScheme] ?? $colorSchemes['themeDefault'];
-        if (Auth::isLoggedIn()) {
-            session(['usersettings.colors.primaryColor' => $pickedScheme['primaryColor']]);
-        }
-
-        return $pickedScheme['primaryColor'];
-    }
-
-    /**
-     * getSecondaryColor - Retrieves the secondary color for the current user's color scheme
-     *
-     * This method returns the secondary color based on the following conditions:
-     * - If the secondary color is set in the user's session and is not empty, and the user is logged in,
-     *   it will return the value stored in the session.
-     * - If the user is logged in, it will set the secondary color from the available color schemes based on the current color scheme in use.
-     * - If none of the above conditions are met, it will return the secondary color from the available color schemes based on the current color scheme in use.
-     *
-     * @return string The secondary color for the current user's color scheme
-     */
-    public function getSecondaryColor()
-    {
-
-        if (
-            session()->exists('usersettings.colors.secondaryColor')
-            && session('usersettings.colors.secondaryColor') != ''
-            && Auth::isLoggedIn()
-        ) {
-            return session('usersettings.colors.secondaryColor');
-        }
-
-        $colorSchemes = $this->getAvailableColorSchemes();
-        $currentColorScheme = $this->getColorScheme();
-
-        $pickedScheme = $colorSchemes[$currentColorScheme] ?? $colorSchemes['themeDefault'];
-        if (Auth::isLoggedIn()) {
-            session(['usersettings.colors.secondaryColor' => $pickedScheme['secondaryColor']]);
-        }
-
-        return $pickedScheme['secondaryColor'];
-    }
 
     /**
      * readIniData - Read theme.ini configuration data
@@ -976,8 +698,6 @@ class Theme
 
     public static function clearCache(): void
     {
-        session()->forget('usersettings.colors.primaryColor');
-        session()->forget('usersettings.colors.secondarycolor');
         session()->forget('usersettings.colorMode');
         session()->forget('usersettings.colorScheme');
         session()->forget('usersettings.themeFont');

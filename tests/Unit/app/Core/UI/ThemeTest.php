@@ -69,44 +69,6 @@ class ThemeTest extends \Unit\TestCase
 
     // Write tests below
 
-    /**
-     * Test GetMenuTypes method
-     */
-    public function test_get_default_color_scheme_with_color_env_set()
-    {
 
-        // Load class to be tested
-        $this->theme = new Theme(
-            settingsRepo: $this->settingsRepoMock,
-            language: $this->languageMock,
-            config: $this->configMock,
-            appSettings: $this->appSettingsMock,
-            fileManager: $this->fileManagerMock
-        );
 
-        $colorScheme = $this->theme->getColorScheme();
-        $this->assertEquals('companyColors', $colorScheme);
-
-    }
-
-    /**
-     * Test GetMenuTypes method
-     */
-    public function test_get_default_color_scheme_without_env()
-    {
-
-        $configMock = $this->make(Environment::class, []);
-
-        $theme = new Theme(
-            settingsRepo: $this->settingsRepoMock,
-            language: $this->languageMock,
-            config: $configMock,
-            appSettings: $this->appSettingsMock,
-            fileManager: $this->fileManagerMock
-        );
-
-        $colorScheme = $theme->getColorScheme();
-        $this->assertEquals('themeDefault', $colorScheme);
-
-    }
 }

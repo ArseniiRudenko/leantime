@@ -64,18 +64,19 @@ leantime.snippets = (function () {
 
     };
 
-    var toggleTheme = function (theme) {
+    var toggleColor = function (theme) {
 
-        var themeUrl = jQuery("#themeStyleSheet").attr("href");
-
-        if(theme == "light"){
-            themeUrl = themeUrl.replace("dark.css", "light.css");
-            jQuery("#themeStyleSheet").attr("href", themeUrl);
-        }else if (theme == "dark"){
-            themeUrl = themeUrl.replace("light.css", "dark.css");
-            jQuery("#themeStyleSheet").attr("href", themeUrl);
+        let sheet = document.getElementById("themeStyleSheet");
+        if (!sheet) {
+           console.log("Theme stylesheet not found");
         }
-
+        var themeUrl = sheet.getAttribute("href");
+        //replace last segment with new theme
+        const regex = /[^\/]+\.css/;
+        let newCss = theme + ".css";
+        themeUrl = themeUrl.replace(regex, newCss);
+        console.log(themeUrl)
+        sheet.setAttribute("href", themeUrl);
     };
 
     var toggleBg = function (theme) {
@@ -95,15 +96,6 @@ leantime.snippets = (function () {
     var toggleFont = function (font) {
 
         jQuery("#fontStyleSetter").html(":root { --primary-font-family: '"+font+"', 'Helvetica Neue', Helvetica, sans-serif; }")
-
-
-    };
-
-    var toggleColors = function (accent1, accent2) {
-
-        jQuery("#colorSchemeSetter").html(":root { --accent1: "+accent1+"; --accent2: "+accent2+"}")
-
-
     };
 
 
@@ -114,9 +106,8 @@ leantime.snippets = (function () {
         copyToClipboard:copyToClipboard,
         initConfettiClick:initConfettiClick,
         accordionToggle:accordionToggle,
-        toggleTheme:toggleTheme,
+        toggleColor:toggleColor,
         toggleFont:toggleFont,
-        toggleColors:toggleColors,
         toggleBg:toggleBg
     };
 

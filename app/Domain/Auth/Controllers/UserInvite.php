@@ -75,11 +75,6 @@ class UserInvite extends Controller
                 $userColorMode = 'light';
             }
 
-            $userColorScheme = $this->settingService->getSetting('usersettings.'.$user['id'].'.colorScheme');
-            if (! $userColorScheme) {
-                $userColorScheme = 'companyColors';
-            }
-
             $themeFont = $this->settingService->getSetting('usersettings.'.$user['id'].'.themeFont');
             if (! $themeFont) {
                 $themeFont = 'Roboto';
@@ -95,8 +90,6 @@ class UserInvite extends Controller
             }
 
             $timezonesAvailable = timezone_identifiers_list();
-
-            $availableColorSchemes = $this->themeCore->getAvailableColorSchemes();
 
             $workdays = $this->settingService->getSetting('usersettings.'.$user['id'].'.workdays');
             if (! $workdays) {
@@ -160,13 +153,11 @@ class UserInvite extends Controller
             $this->tpl->assign('userTheme', $userTheme);
             $this->tpl->assign('themeFont', $themeFont);
             $this->tpl->assign('userColorMode', $userColorMode);
-            $this->tpl->assign('userColorScheme', $userColorScheme);
             $this->tpl->assign('languageList', $this->language->getLanguageList());
             $this->tpl->assign('dateFormat', $userDateFormat);
             $this->tpl->assign('timeFormat', $userTimeFormat);
             $this->tpl->assign('dateTimeValues', $this->getSupportedDateTimeFormats());
             $this->tpl->assign('timezone', $timezone);
-            $this->tpl->assign('availableColorSchemes', $availableColorSchemes);
             $this->tpl->assign('availableFonts', $this->themeCore->getAvailableFonts());
             $this->tpl->assign('fontTooltips', $this->themeCore->fontTooltips);
             $this->tpl->assign('availableThemes', $this->themeCore->getAll());
@@ -258,17 +249,13 @@ class UserInvite extends Controller
         if (isset($_POST['step']) && $_POST['step'] == 3) {
 
             $postColorMode = htmlentities($_POST['colormode']);
-            $postColorScheme = htmlentities($_POST['colorscheme'] ?? 'themeDefault');
 
             $this->settingService->saveSetting('usersettings.'.$userInvite['id'].'.colorMode', $postColorMode);
-            $this->settingService->saveSetting('usersettings.'.$userInvite['id'].'.colorScheme', $postColorScheme);
 
             self::dispatchEvent('onboarding_colorchoice_'.$postColorMode);
-            self::dispatchEvent('onboarding_colorchoice_'.$postColorScheme);
 
             $this->themeCore->clearCache();
             $this->themeCore->setColorMode($postColorMode);
-            $this->themeCore->setColorScheme($postColorScheme);
             $this->themeCore->clearCache();
 
             return FrontcontrollerCore::redirect(BASE_URL.'/auth/userInvite/'.$invitationId.'?step=4');

@@ -5,6 +5,7 @@ namespace Leantime\Domain\Projects\Services;
 use DateInterval;
 use DateTime;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Leantime\Core\Events\DispatchesEvents;
@@ -93,7 +94,13 @@ class Projects
      *
      * @api
      */
-    public function getProjectProgress(int $projectId): array
+    public function getProjectProgress(int $projectId): array{
+        return Cache::remember('project_progress_'.$projectId, 600, function () use ($projectId) {
+            return $this->getProjectProgressUnderlying($projectId);
+        });
+    }
+
+    private function getProjectProgressUnderlying(int $projectId): array
     {
         $returnValue = ['percent' => 0, 'estimatedCompletionDate' => 'We need more data to determine that.', 'plannedCompletionDate' => ''];
 
@@ -817,7 +824,11 @@ class Projects
      */
     public function isUserAssignedToProject(int $userId, int $projectId): bool
     {
-        return $this->projectRepository->isUserAssignedToProject($userId, $projectId);
+        return  Cache::remember($userId."_assigned_".$projectId,600,
+            function () use ($userId, $projectId) {
+                return $this->projectRepository->isUserAssignedToProject($userId, $projectId);
+            }
+        );
     }
 
     /**

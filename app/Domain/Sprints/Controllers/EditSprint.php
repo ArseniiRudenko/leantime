@@ -45,7 +45,7 @@ class EditSprint extends Controller
             $sprint->endDate = $endDate;
         }
 
-        $allAssignedprojects = $this->projectService->getProjectsAssignedToUser(userId: session('userdata.id'), projectStatus: 'open', projectTypes: 'project');
+        $allAssignedprojects = $this->projectService->getProjectsAssignedToUser(userId: session('userdata.id'), projectStatus: 'open');
 
         $this->tpl->assign('allAssignedprojects', $allAssignedprojects);
         $this->tpl->assign('sprint', $sprint);

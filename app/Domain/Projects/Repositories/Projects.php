@@ -101,8 +101,8 @@ class Projects
     public function getUsersAssignedToProject($id, $includeApiUsers = false): array|bool
     {
         $query = 'SELECT
-					DISTINCT zp_user.id,
-					IF(zp_user.firstname IS NOT NULL, zp_user.firstname, zp_user.username) AS firstname,
+					zp_user.id,
+					zp_user.firstname AS firstname,
 					zp_user.lastname,
 					zp_user.username,
 					zp_user.notifications,
@@ -113,12 +113,9 @@ class Projects
                     zp_user.modified,
                     zp_user.role,
                     zp_relationuserproject.projectRole
-				FROM zp_relationuserproject
-				LEFT JOIN zp_user ON zp_relationuserproject.userId = zp_user.id
-				LEFT JOIN zp_projects ON zp_relationuserproject.projectId = zp_projects.id
-                WHERE
-                        zp_relationuserproject.projectId = :projectId
-                        AND zp_user.id IS NOT NULL ';
+				FROM zp_user
+				LEFT JOIN zp_relationuserproject ON zp_relationuserproject.userId = zp_user.id
+                WHERE zp_relationuserproject.projectId = :projectId ';
 
         if ($includeApiUsers === false) {
             $query .= " AND !(zp_user.source <=> 'api') ";

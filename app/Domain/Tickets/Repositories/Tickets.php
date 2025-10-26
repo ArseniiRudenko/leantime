@@ -891,7 +891,6 @@ class Tickets
 					LEFT JOIN zp_user AS t3 ON zp_tickets.editorId = t3.id
 					LEFT JOIN zp_tickets AS parent on zp_tickets.dependingTicketId = parent.id
 					LEFT JOIN zp_tickets AS milestones on zp_tickets.milestoneid = milestones.id
-
 					WHERE
 						zp_tickets.id = :ticketId
 					LIMIT 1";

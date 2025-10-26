@@ -1264,7 +1264,14 @@ class Tickets
      *
      * @api
      */
-    public function getMilestoneProgress(int|string $milestoneId): float
+    public function getMilestoneProgress(int|string $milestoneId): float{
+        return Cache::remember('milestoneProgress_'.$milestoneId, 120, function () use ($milestoneId) {
+            return $this->getMilestoneProgressInternal($milestoneId);
+        });
+    }
+
+
+    private function getMilestoneProgressInternal(int|string $milestoneId): float
     {
 
         if (is_numeric($milestoneId)) {
@@ -1323,7 +1330,7 @@ class Tickets
         }
 
         if ($totalScore == 0) {
-            return (float) 0;
+            return 0.0;
         }
 
         $percentDone = $doneScore / $totalScore * 100;

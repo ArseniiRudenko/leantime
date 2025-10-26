@@ -79,3 +79,30 @@ window.addEventListener("HTMX.ShowNotification", function(evt) {
         }
     })
 });
+
+//function to check if a color is dark or light
+function isColorDark(color, element = document.body) {
+    let resolvedColor = color;
+
+    // --- 1️⃣ Resolve CSS variable ---
+    if (color.startsWith('var(')) {
+    const varName = color.slice(4, -1).trim();
+    resolvedColor = getComputedStyle(element).getPropertyValue(varName).trim();
+}
+
+    // --- 2️⃣ Create a temporary element to resolve any CSS color value ---
+    const div = document.createElement('div');
+    div.style.color = resolvedColor;
+    document.body.appendChild(div);
+    const computed = getComputedStyle(div).color;
+    document.body.removeChild(div);
+
+    // computed is always like "rgb(r, g, b)"
+    const [r, g, b] = computed.match(/\d+/g).map(Number);
+
+    // --- 3️⃣ Compute luminance ---
+    const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+
+    return luminance < 128;
+}
+

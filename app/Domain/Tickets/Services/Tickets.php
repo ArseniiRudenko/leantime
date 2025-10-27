@@ -1256,6 +1256,7 @@ class Tickets
 
     /**
      * Calculate the progress of a milestone based on the tickets associated with it.
+     * !!!IMPORTANT: Also silently pulls sprint from session! Motherfucker.
      *
      * @param  int|string  $milestoneId  ID of the milestone.
      * @return float The progress of the milestone as a percentage.
@@ -1264,26 +1265,25 @@ class Tickets
      *
      * @api
      */
-    public function getMilestoneProgress(int|string $milestoneId): float{
-        return Cache::remember('milestoneProgress_'.$milestoneId, 120, function () use ($milestoneId) {
-            return $this->getMilestoneProgressInternal($milestoneId);
-        });
-    }
-
-
-    private function getMilestoneProgressInternal(int|string $milestoneId): float
+    public function getMilestoneProgress(int|string $milestoneId): float
     {
-
         if (is_numeric($milestoneId)) {
             $milestoneId = (int) $milestoneId;
         }
+        $sprint =  session('currentSprint') ?? '';
+        return Cache::remember('milestoneProgress_'.$milestoneId.$sprint, 60, function () use ($milestoneId,$sprint) {
+            return $this->getMilestoneProgressInternal($milestoneId,$sprint);
+        });
+    }
 
+    private function  getMilestoneProgressInternal(int $milestoneId, string $sprint): float
+    {
         $milestone = $this->getTicket($milestoneId);
         if (! $milestone) {
             throw new EntryNotFoundException("Can't find milestone");
         }
 
-        $prepareSearchParams = $this->prepareTicketSearchArray(['milestone' => $milestoneId, 'currentProject' => $milestone->projectId, 'currentSprint' => '']);
+        $prepareSearchParams = ['milestone' => $milestoneId, 'sprint' => $sprint];
         $tickets = $this->ticketRepository->getAllBySearchCriteria($prepareSearchParams);
 
         $statusLabels = $this->getStatusLabels($milestone->projectId);

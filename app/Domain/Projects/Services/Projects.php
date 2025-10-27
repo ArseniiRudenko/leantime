@@ -273,7 +273,7 @@ class Projects
         $contentToCheck = '';
         // Find entity ID & content
         // Todo once all entities are models this if statement can be reduced
-        if (isset($notification->entity['id']) && is_array($notification->entity)) {
+        if (is_array($notification->entity) && isset($notification->entity['id'])) {
             $entityId = $notification->entity['id'];
 
             if (isset($mentionFields[$notification->module])) {

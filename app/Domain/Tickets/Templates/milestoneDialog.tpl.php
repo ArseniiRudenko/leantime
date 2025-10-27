@@ -108,6 +108,10 @@ $statusLabels = $tpl->get('statusLabels');
     <label><?= $tpl->__('label.planned_end_date'); ?></label>
     <input type="text" name="editTo" autocomplete="off" value="<?php echo format($currentMilestone->editTo)->date() ?>"  placeholder="<?= $tpl->__('language.dateformat'); ?>" id="milestoneEditTo" /><br />
 
+    <label><?= $tpl->__('label.description'); ?></label>
+    <textarea name="description" id="ticketDescription" class="complexEditor"><?php echo $currentMilestone->description !== null ? htmlentities($currentMilestone->description) : ''; ?></textarea><br/>
+
+
     <div class="row">
         <div class="col-md-6">
             <input type="submit" value="<?= $tpl->__('buttons.save'); ?>" class="btn btn-primary"/>
@@ -135,6 +139,7 @@ $statusLabels = $tpl->get('statusLabels');
 
         leantime.ticketsController.initSimpleColorPicker();
         leantime.ticketsController.initMilestoneDates();
+        leantime.editorController.initComplexEditor(<?=$currentMilestone->id?>);
 
         <?php if (! $login::userIsAtLeast($roles::$editor)) { ?>
             leantime.authController.makeInputReadonly(".nyroModalCont");
@@ -144,7 +149,11 @@ $statusLabels = $tpl->get('statusLabels');
             leantime.commentsController.enableCommenterForms();
         <?php }?>
 
-
     })
+
+    leantime.editorController.initComplexEditor(<?=$currentMilestone->id?>);
+
+    Prism.highlightAll();
 </script>
+
 

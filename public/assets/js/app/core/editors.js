@@ -210,9 +210,9 @@ leantime.editorController = (function () {
         );
     };
 
-    var initComplexEditor = function () {
+    var initComplexEditor = function (id) {
 
-        var entityId = jQuery("input[name=id]").val();
+        var entityId = id;
 
         if(entityId == undefined) {
             entityId = "new";

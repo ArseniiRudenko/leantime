@@ -1637,6 +1637,13 @@ class Tickets
 
         foreach ($values as $key => $value) {
             if (isset($columnSet[$key])) {
+                //TODO: set all null on empty?
+                if($key == 'group_id'){
+                    if ($value == 0 || $value == '') {
+                        $value = null;
+                    }
+                }
+
                 $stmn->bindValue(':' . DbCore::sanitizeToColumnString($key), $value, PDO::PARAM_STR);
             }
         }

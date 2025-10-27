@@ -1853,7 +1853,7 @@ class Tickets
                 'url' => $actual_link,
                 'text' => $this->language->__('email_notifications.todo_update_cta'),
             ];
-            $notification->entity = $ticket;
+            $notification->entity = (array)$ticket;
             $notification->module = 'tickets';
             $notification->projectId = $ticket->projectId ?? session('currentProject') ?? -1;
             $notification->subject = $subject;
@@ -1908,7 +1908,7 @@ class Tickets
         $values = [
             'headline' => $params['headline'],
             'type' => 'milestone',
-            'description' => '',
+            'description' => $params['description'] ?? '',
             'projectId' => session('currentProject'),
             'editorId' => $params['editorId'],
             'userId' => session('userdata.id'),

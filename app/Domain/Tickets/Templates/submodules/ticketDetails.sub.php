@@ -126,7 +126,6 @@ $ticketTypes = $tpl->get('ticketTypes');
                     </div>
                 </div>
                 <br />
-
                 <div class="form-group" id="descriptionEditor">
                     <textarea name="description" id="ticketDescription"
                               class="complexEditor"><?php echo $ticket->description !== null ? htmlentities($ticket->description) : ''; ?></textarea><br/>
@@ -367,11 +366,11 @@ $ticketTypes = $tpl->get('ticketTypes');
     jQuery(document).ready(function(){
         //Set accordion states
         //All accordions start open
-        leantime.editorController.initComplexEditor();
+        leantime.editorController.initComplexEditor(<?=$ticket->id?>);
 
     });
 
-    leantime.editorController.initComplexEditor();
+    leantime.editorController.initComplexEditor(<?=$ticket->id?>);
 
     Prism.highlightAll();
 

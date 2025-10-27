@@ -114,7 +114,7 @@ $tpl->dispatchTplEvent('filters.beforeLefthandSectionClose');
                                             </ul>
                                         </div>
                                     </td>
-                                    <?php $tpl->dispatchTplEvent('allTicketsTable.beforeRowEnd', ['row' => $row, 'rowNum' => $rowNum]); ?>
+                                    <?php $tpl->dispatchTplEvent('allTicketsTable.beforeRowEnd', ['ticket' => $row, 'rowNum' => $rowNum]); ?>
                                     <td data-search="<?= isset($statusLabels[$row['status']]) ? $statusLabels[$row['status']]['name'] : ''; ?>" data-order="<?= $tpl->e($row['headline']); ?>" >
                                         <a href="javascript:void(0);"><strong><?= $tpl->e($row['headline']); ?></strong></a></td>
 

@@ -49,6 +49,9 @@ class Menu
 
     public function getUserProjectList(int $userId, null|int|string $client = null): array
     {
+
+        $recentProjects = [];
+
         $projects = $this->projectService->getProjectHierarchyAssignedToUser($userId, 'open', $client);
         $allAssignedprojects = $projects['allAssignedProjects'];
         $allAssignedprojectsHierarchy = $projects['allAssignedProjectsHierarchy'];

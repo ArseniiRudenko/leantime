@@ -248,7 +248,10 @@ class UserInvite extends Controller
 
         if (isset($_POST['step']) && $_POST['step'] == 3) {
 
-            $postColorMode = htmlentities($_POST['colormode']);
+            if (isset($_POST['colormode']))
+                $postColorMode = htmlentities($_POST['colormode']);
+            else
+                $postColorMode = 'light-leantime';
 
             $this->settingService->saveSetting('usersettings.'.$userInvite['id'].'.colorMode', $postColorMode);
 

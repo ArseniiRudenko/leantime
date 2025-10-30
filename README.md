@@ -1,5 +1,5 @@
 ### Note from autor of the fork.
-I've created this fork for my personal usage, it cuts some features of the original(styling is limited to css files, no color overrides), and ads some new events and filters(and changes how tickets work a bit) - all my plugins are primary designed to work with this version.
+I've created this fork for my personal usage, it cuts some features of the original(styling is limited to css files, no color overrides, which avoids styling combinations with contrast issues), and ads some new events and filters(and changes how tickets work a bit) - all my plugins are primary designed to work with this version.
 
 Original is better supported and actively developed, so go and check it out. 
 

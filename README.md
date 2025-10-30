@@ -1,3 +1,13 @@
+### Note from autor of the fork.
+I've created this fork for my personal usage, it cuts some features of the original(styling is limited to css files, no color overrides), and ads some new events and filters(and changes how tickets work a bit) - all my plugins are primary designed to work with this version.
+
+Original is better supported and actively developed, so go and check it out. 
+
+Or you can try this version. Or fork it. Or fork the original. Or try upstreaming some of the changes from here to the original.
+
+Do what you want, I'm not your dad.
+
+
 
 <div align="center">
 <a href="https://leantime.io"><img src="https://leantime.io/wp-content/uploads/2023/03/leantime_logo.png" alt="Leantime Logo" width="300"/></a>

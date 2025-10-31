@@ -37,11 +37,11 @@ $size = floor(100 / $numberofColumns);
                 <?php
                 $tpl->dispatchTplEvent('filters.afterLefthandSectionOpen');
 
-$tpl->displaySubmodule('tickets-ticketNewBtn');
-$tpl->displaySubmodule('tickets-ticketFilter');
+                $tpl->displaySubmodule('tickets-ticketNewBtn');
+                $tpl->displaySubmodule('tickets-ticketFilter');
 
-$tpl->dispatchTplEvent('filters.beforeLefthandSectionClose');
-?>
+                $tpl->dispatchTplEvent('filters.beforeLefthandSectionClose');
+                ?>
             </div>
 
             <div class="col-md-4 center">
@@ -88,7 +88,9 @@ $tpl->dispatchTplEvent('filters.beforeLefthandSectionClose');
                             <tr style="display:none;">
 
                                 <th style="width:20px" class="status-col"><?= $tpl->__('label.todo_status'); ?></th>
+                                <?php $tpl->dispatchTplEvent('allTicketsTable.addHeader'); ?>
                                 <th><?= $tpl->__('label.title'); ?></th>
+
                             </tr>
 
                             <?php $tpl->dispatchTplEvent('allTicketsTable.afterHeadRow', ['tickets' => $allTickets]); ?>

@@ -1485,95 +1485,54 @@ class Tickets
     /**
      * addTicket - add a Ticket with postback test
      */
-    public function addTicket(array $values): bool|int
+    public function addTicket(array &$values): bool|int
     {
+        $columns = Cache::remember('table_columns_array:zp_tickets',600 , function (){ return Schema::getColumnListing('zp_tickets'); });
+        $columnSet = array_flip($columns);
 
-        $query = 'INSERT INTO zp_tickets (
-						headline,
-						type,
-						description,
-						date,
-						dateToFinish,
-						projectId,
-						status,
-						userId,
-						tags,
-						sprint,
-						storypoints,
-						priority,
-						hourRemaining,
-						planHours,
-						acceptanceCriteria,
-						editFrom,
-						editTo,
-						editorId,
-						dependingTicketId,
-                        milestoneid,
-						sortindex,
-						kanbanSortindex,
-                        modified
-				) VALUES (
-						:headline,
-						:type,
-						:description,
-						:date,
-						:dateToFinish,
-						:projectId,
-						:status,
-						:userId,
-						:tags,
-						:sprint,
-						:storypoints,
-						:priority,
-						:hourRemaining,
-						:planHours,
-						:acceptanceCriteria,
-						:editFrom,
-						:editTo,
-						:editorId,
-						:dependingTicketId,
-				         :milestoneid,
-						:sortIndex,
-						0,
-                        :modified
-				)';
+        $values['dependingTicketId'] = $values['dependingTicketId'] ?? '';
+        $values['type'] = $values['type'] ?? 'task';
+        $values['description'] = $values['description'] ?? '';
+        $values['projectId'] = $values['projectId'] ?? session('currentProject');
+        $values['userId'] = $values['userId'] ?? session('userdata.id');
+        $values['editorId'] = $values['editorId'] ?? session('userdata.id');
+        $values['date'] = $values['date'] ?? date('Y-m-d H:i:s');
+        $values['dateToFinish'] = isset($values['dateToFinish']) ? strip_tags($values['dateToFinish']) : '';
+        $values['status'] = ($values['status']) ? (int)$values['status'] : 3;
+        $values['storypoints'] = $values['storypoints'] ?? '';
+        $values['hourRemaining'] = $values['hourRemaining'] ?? '';
+        $values['planHours'] = $values['planHours'] ?? '';
+        $values['tags'] = $values['tags'] ?? '';
+        $values['sortindex'] = $values['sortindex'] ?? '';
+        $values['sprint'] = $values['sprint'] ?? '';
+        $values['acceptanceCriteria'] = $values['acceptanceCriteria'] ?? '';
+        $values['priority'] = $values['priority'] ?? '';
+        $values['editFrom'] = $values['editFrom'] ?? '';
+        $values['editTo'] = $values['editTo'] ?? '';
+        $values['milestoneid']= $values['milestoneid'] ?? $values['milestone'] ?? '';
+        $values['kanbanSortIndex'] = 0;
+        $values['modified'] = date('Y-m-d H:i:s');
+
+
+        $columnsString = '';
+        $valuesString = '';
+        foreach ($values as $key => $value) {
+            if (isset($columnSet[$key])) {
+                $columnsString .= DbCore::sanitizeToColumnString($key) . ', ';
+                $valuesString .= ':' . DbCore::sanitizeToColumnString($key) . ', ';
+            }
+        }
+
+        $query ="INSERT INTO zp_tickets (". rtrim($columnsString, ', ').') VALUES ('. rtrim($valuesString, ', ').')';
 
         $stmn = $this->db->pdo()->prepare($query);
 
-        $stmn->bindValue(':headline', $values['headline'], PDO::PARAM_STR);
-        $stmn->bindValue(':type', $values['type'], PDO::PARAM_STR);
-        $stmn->bindValue(':description', $values['description'], PDO::PARAM_STR);
-        $stmn->bindValue(':date', $values['date'], PDO::PARAM_STR);
-        $stmn->bindValue(':dateToFinish', $values['dateToFinish'], PDO::PARAM_STR);
-        $stmn->bindValue(':projectId', $values['projectId'], PDO::PARAM_STR);
-        $stmn->bindValue(':status', $values['status'], PDO::PARAM_STR);
-        $stmn->bindValue(':userId', $values['userId'], PDO::PARAM_STR);
-        $stmn->bindValue(':tags', $values['tags'], PDO::PARAM_STR);
-
-        $stmn->bindValue(':sprint', $values['sprint'], PDO::PARAM_STR);
-        $stmn->bindValue(':storypoints', $values['storypoints'], PDO::PARAM_STR);
-        $stmn->bindValue(':priority', $values['priority'], PDO::PARAM_STR);
-        $stmn->bindValue(':hourRemaining', $values['hourRemaining'], PDO::PARAM_STR);
-        $stmn->bindValue(':planHours', $values['planHours'], PDO::PARAM_STR);
-        $stmn->bindValue(':acceptanceCriteria', $values['acceptanceCriteria'], PDO::PARAM_STR);
-
-        $stmn->bindValue(':editFrom', $values['editFrom'], PDO::PARAM_STR);
-        $stmn->bindValue(':editTo', $values['editTo'], PDO::PARAM_STR);
-        $stmn->bindValue(':sortIndex', $values['sortIndex'] ?? '', PDO::PARAM_STR);
-        $stmn->bindValue(':editorId', $values['editorId'], PDO::PARAM_STR);
-        $stmn->bindValue(':modified', gmdate('Y-m-d H:i:s'), PDO::PARAM_STR);
-
-        $depending = $values['dependingTicketId'] ?? '';
-
-        $stmn->bindValue(':dependingTicketId', $depending, PDO::PARAM_STR);
-
-        $milestoneId = $values['milestoneid'] ?? '';
-
-        $stmn->bindValue(':milestoneid', $milestoneId, PDO::PARAM_STR);
-
-
+        foreach ($values as $key => $value) {
+            if (isset($columnSet[$key])) {
+                $stmn->bindValue(':' . $key, $value, PDO::PARAM_STR);
+            }
+        }
         $stmn->execute();
-
         $stmn->closeCursor();
 
         if ($this->db->pdo()->lastInsertId() !== false) {

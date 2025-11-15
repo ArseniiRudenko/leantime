@@ -11,6 +11,7 @@ use Leantime\Domain\Projects\Repositories\Projects as ProjectRepository;
 use Leantime\Domain\Users\Repositories\Users as UserRepository;
 use Leantime\Domain\Users\Services\Users;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\HttpFoundation\Response;
 
 class EditUser extends Controller
 {
@@ -40,7 +41,7 @@ class EditUser extends Controller
     /**
      * run - display template and edit data
      */
-    public function run()
+    public function run(): Response
     {
 
         Auth::authOrRedirect([Roles::$owner, Roles::$admin], true);

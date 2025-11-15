@@ -1473,42 +1473,19 @@ class Tickets
     public function quickAddTicket($params): array|bool
     {
 
-        $values = [
-            'headline' => $params['headline'],
-            'type' => $params['type'] ?? 'task',
-            'description' => $params['description'] ?? '',
-            'projectId' => $params['projectId'] ?? session('currentProject'),
-            'editorId' => $params['editorId'] ?? session('userdata.id'),
-            'userId' => session('userdata.id') ?? $params['userId'] ?? null,
-            'date' => date('Y-m-d H:i:s'),
-            'dateToFinish' => isset($params['dateToFinish']) ? strip_tags($params['dateToFinish']) : '',
-            'status' => isset($params['status']) ? (int) $params['status'] : 3,
-            'storypoints' => isset($params['storypoints']) ? (int) $params['storypoints'] : '',
-            'hourRemaining' => '',
-            'planHours' => isset($params['planHours']) ? (int) $params['planHours'] : '',
-            'sprint' => isset($params['sprint']) ? (int) $params['sprint'] : '',
-            'acceptanceCriteria' => '',
-            'priority' => isset($params['priority']) ? (int) $params['priority'] : '',
-            'tags' => '',
-            'editFrom' => $params['editFrom'] ?? '',
-            'editTo' => $params['editTo'] ?? '',
-            'milestoneid' => isset($params['milestone']) ? (int) $params['milestone'] : '',
-            'dependingTicketId' => isset($params['dependingTicketId']) ? (int) $params['dependingTicketId'] : '',
-            'sortIndex' => $params['sortIndex'] ?? '',
-        ];
-
-        if ($values['headline'] == '') {
+        if ($params['headline'] == '') {
             return ['status' => 'error', 'message' => 'Headline Missing'];
         }
 
-        $values = $this->prepareTicketDates($values);
 
-        $result = $this->ticketRepository->addTicket($values);
+        $params = $this->prepareTicketDates($params);
+
+        $result = $this->ticketRepository->addTicket($params);
 
         self::dispatchEvent('ticket_created');
 
         if ($result > 0) {
-            $values['id'] = $result;
+            $params['id'] = $result;
             $actual_link = BASE_URL.'/dashboard/home#/tickets/showTicket/'.$result;
             $message = sprintf($this->language->__('email_notifications.new_todo_message'), session('userdata.name'), strip_tags($params['headline']));
             $subject = $this->language->__('email_notifications.new_todo_subject');
@@ -1518,9 +1495,9 @@ class Tickets
                 'url' => $actual_link,
                 'text' => $this->language->__('email_notifications.new_todo_cta'),
             ];
-            $notification->entity = $values;
+            $notification->entity = $params;
             $notification->module = 'tickets';
-            $notification->projectId = $values['projectId'] ?? session('currentProject') ?? -1;
+            $notification->projectId = $params['projectId'] ?? session('currentProject');
             $notification->subject = $subject;
             $notification->authorId = session('userdata.id') ?? -1;
             $notification->message = $message;
@@ -1625,32 +1602,6 @@ class Tickets
      */
     public function addTicket($values): array|int|bool
     {
-        $values = [
-            'id' => '',
-            'headline' => $values['headline'] ?? '',
-            'type' => $values['type'] ?? 'task',
-            'description' => $values['description'] ?? '',
-            'projectId' => $values['projectId'] ?? session('currentProject'),
-            'editorId' => $values['editorId'] ?? '',
-            'userId' => session('userdata.id'),
-            'date' => gmdate('Y-m-d H:i:s'),
-            'dateToFinish' => $values['dateToFinish'] ?? '',
-            'timeToFinish' => $values['timeToFinish'] ?? '',
-            'status' => $values['status'] ?? 3,
-            'planHours' => $values['planHours'] ?? '',
-            'tags' => $values['tags'] ?? '',
-            'sprint' => $values['sprint'] ?? '',
-            'storypoints' => $values['storypoints'] ?? '',
-            'hourRemaining' => $values['hourRemaining'] ?? '',
-            'priority' => $values['priority'] ?? '',
-            'acceptanceCriteria' => $values['acceptanceCriteria'] ?? '',
-            'editFrom' => $values['editFrom'] ?? '',
-            'timeFrom' => $values['timeFrom'] ?? '',
-            'editTo' => $values['editTo'] ?? '',
-            'timeTo' => $values['timeTo'] ?? '',
-            'dependingTicketId' => $values['dependingTicketId'] ?? '',
-            'milestoneid' => $values['milestoneid'] ?? '',
-        ];
 
         if (! $this->projectService->isUserAssignedToProject(session('userdata.id'), $values['projectId'])) {
             return ['msg' => 'notifications.ticket_save_error_no_access', 'type' => 'error'];

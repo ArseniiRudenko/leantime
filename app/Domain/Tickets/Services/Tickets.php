@@ -1271,9 +1271,7 @@ class Tickets
             $milestoneId = (int) $milestoneId;
         }
         $sprint =  session('currentSprint') ?? '';
-        return Cache::remember('milestoneProgress_'.$milestoneId.$sprint, 60, function () use ($milestoneId,$sprint) {
-            return $this->getMilestoneProgressInternal($milestoneId,$sprint);
-        });
+        return $this->getMilestoneProgressInternal($milestoneId,$sprint);
     }
 
     private function  getMilestoneProgressInternal(int $milestoneId, string $sprint): float

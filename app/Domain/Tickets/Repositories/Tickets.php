@@ -1498,7 +1498,7 @@ class Tickets
         $values['editorId'] = $values['editorId'] ?? session('userdata.id');
         $values['date'] = $values['date'] ?? date('Y-m-d H:i:s');
         $values['dateToFinish'] = isset($values['dateToFinish']) ? strip_tags($values['dateToFinish']) : '';
-        $values['status'] = ($values['status']) ? (int)$values['status'] : 3;
+        $values['status'] = isset($values['status']) ? (int)$values['status'] : 3;
         $values['storypoints'] = $values['storypoints'] ?? '';
         $values['hourRemaining'] = $values['hourRemaining'] ?? '';
         $values['planHours'] = $values['planHours'] ?? '';

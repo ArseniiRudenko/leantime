@@ -189,10 +189,6 @@ class FileManager implements FileManagerInterface
                 return false;
             }
 
-            // Get file mime type
-            $extension = pathinfo($fileName, PATHINFO_EXTENSION);
-            $mimeType = $this->filesystemManager->mimeType($fileName);
-
             return $storage->download($fileName, $realName);
 
         } catch (\Exception $e) {

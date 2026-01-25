@@ -3,6 +3,7 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/app/Plugins/AuditTrail" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/Plugins/ClickupListener" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/app/Plugins/GiteaListener" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/app/Plugins/LeanGroups" vcs="Git" />
   </component>

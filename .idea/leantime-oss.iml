@@ -12,7 +12,8 @@
       <sourceFolder url="file://$MODULE_DIR$/app/Plugins/McpServer/vendor/php-mcp/server/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/app/Plugins/AuditTrail/" isTestSource="false" packagePrefix="Leantime\Plugins\AuditTrail\" />
       <sourceFolder url="file://$MODULE_DIR$/app/Plugins/GiteaListener/" isTestSource="false" packagePrefix="Leantime\Plugins\GiteaListener\" />
-      <sourceFolder url="file://$MODULE_DIR$/app/Plugins/LeanGroups/" isTestSource="false" packagePrefix="Leantime\Plugins\LeanGroups\"  />
+      <sourceFolder url="file://$MODULE_DIR$/app/Plugins/LeanGroups/" isTestSource="false" packagePrefix="Leantime\Plugins\LeanGroups\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/Plugins/ClickupListener/" isTestSource="false" packagePrefix="Leantime\Plugins\ClickupListener\" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/league/html-to-markdown" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/bacon/bacon-qr-code" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/htmlawed/htmlawed" />
@@ -131,6 +132,7 @@
       <excludeFolder url="file://$MODULE_DIR$/storage/framework/cache/avatars" />
       <excludeFolder url="file://$MODULE_DIR$/storage/framework/cache/installation" />
       <excludeFolder url="file://$MODULE_DIR$/app/Plugins/GiteaListener/vendor/composer" />
+      <excludeFolder url="file://$MODULE_DIR$/storage/framework" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
